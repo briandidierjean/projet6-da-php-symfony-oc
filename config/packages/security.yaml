@@ -16,6 +16,11 @@ security:
             anonymous: true
             lazy: true
             provider: app_users_provider
+            guard:
+                authenticators:
+                    - App\Security\LoginFormAuthenticator
+            logout:
+                path: user_sign_out
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication
