@@ -50,7 +50,7 @@ class User implements UserInterface
     private $roles = [];
 
     /**
-     * @ORM\Column(type="string)
+     * @ORM\Column(type="string")
      */
     private $resetPasswordToken;
 
