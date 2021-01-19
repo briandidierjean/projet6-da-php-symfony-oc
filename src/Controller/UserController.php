@@ -87,7 +87,15 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $user->setPassword(
+                $passwordEncoder->encodePassword(
+                    $user,
+                    $form->get('plainPassword')->getData()
+                )
+            );
 
+            $entityManager =$this->getDoctrine()->getManager();
+            $entityManager->flush();
         }
 
         return $this->render('user/change-password.html.twig', [
