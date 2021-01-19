@@ -3,12 +3,17 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity()
  * @ORM\Table(name="users")
+ * @UniqueEntity(
+ *     fields="email",
+ *     message="Cette adresse e-mail esst déjà utilisée."
+ * )
  */
 class User implements UserInterface
 {
