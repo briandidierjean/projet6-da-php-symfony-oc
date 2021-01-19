@@ -1,15 +1,15 @@
 <?php
 
 
-namespace App;
+namespace App\Form;
 
 
 use App\Entity\User;
-use Doctrine\DBAL\Types\TextType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -19,19 +19,21 @@ class UserType extends AbstractType
     {
         $builder
             ->add('email', EmailType::class, [
-                'label' => 'Adresse e-mail',
+                'label' => 'Adresse e-mail : ',
                 'required' => true,
             ])
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'required' => true,
-                'first_options' => ['label' => 'Mot de passe'],
-                'second_options' => ['label' => 'Mot de passe (confirmation)'],
+                'first_options' => ['label' => 'Mot de passe : '],
+                'second_options' => ['label' => 'Mot de passe (confirmation) : '],
             ])
             ->add('firstName', TextType::class, [
+                'label' => 'Prénom : ',
                 'required' => true,
             ])
             ->add('lastName', TextType::class, [
+                'label' => 'Nom : ',
                 'required' => true,
             ])
         ;

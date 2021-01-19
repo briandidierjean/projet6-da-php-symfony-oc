@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity()
@@ -20,6 +21,9 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", unique=true)
+     * @Assert\Email(
+     *     message = "L'adresse e-mail '{{ value }}' n'est pas une adresse e-mail valide."
+     * )
      */
     private $email;
 
@@ -28,15 +32,27 @@ class User implements UserInterface
      */
     private $password;
 
+    /**
+     * @Assert\Regex(
+     *     pattern="/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/",
+     *     message="Veuillez saisir un mot de passe d'au moins 8 charactères et contenant 1 minuscule, 1 majuscule et 1 chiffre."
+     * )
+     */
     private $plainPassword;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank(
+     *     message="Veuillez saisir votre prénom."
+     * )
      */
     private $firstName;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank(
+     *     message="Veuillez saisir votre nom."
+     * )
      */
     private $lastName;
 
