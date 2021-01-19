@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Form\ChangePasswordType;
 use App\Form\UserType;
 use App\Security\LoginFormAuthenticator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -70,6 +71,26 @@ class UserController extends AbstractController
         }
 
         return $this->render('user/sign-up.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("change-password", name="user_change_password")
+     */
+    public function changePassword(Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
+    {
+        $user = $this->getUser();
+
+        $form = $this->createForm(ChangePasswordType::class, $user);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+        }
+
+        return $this->render('user/change-password.html.twig', [
             'form' => $form->createView(),
         ]);
     }
