@@ -7,8 +7,11 @@ use App\Form\ChangePasswordType;
 use App\Form\UserType;
 use App\Security\LoginFormAuthenticator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
@@ -99,6 +102,44 @@ class UserController extends AbstractController
         }
 
         return $this->render('user/change-password.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("forget-password", name="user_forget_password")
+     */
+    public function forgetPassword(Request $request, MailerInterface $mailer): Response
+    {
+        $defaultData = [];
+        $form = $this->createFormBuilder($defaultData)
+            ->add('email', EmailType::class)
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+
+            $repository = $this->getDoctrine()->getRepository(User::class);
+            $user = $repository->findOneBy(["email" => $data['email']]);
+
+            $user->setResetPasswordToken(bin2hex(random_bytes(78)).'/date:'.time());
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->flush();
+
+            dump($user);
+
+            $email = (new Email())
+                ->from('snowtricks@briandidierjean.dev')
+                ->to($user->getEmail())
+                ->subject('Réinitialisation de mot de passe')
+                ->text('TEST 122738173813918');
+            $mailer->send($email);
+        }
+
+        return $this->render('user/forget-password.html.twig', [
             'form' => $form->createView(),
         ]);
     }
