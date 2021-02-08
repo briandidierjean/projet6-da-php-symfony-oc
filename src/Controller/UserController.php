@@ -64,7 +64,7 @@ class UserController extends AbstractController
                 )
             );
 
-            $entityManager =$this->getDoctrine()->getManager();
+            $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
 
@@ -100,7 +100,7 @@ class UserController extends AbstractController
                 )
             );
 
-            $entityManager =$this->getDoctrine()->getManager();
+            $entityManager = $this->getDoctrine()->getManager();
             $entityManager->flush();
         }
 
@@ -130,7 +130,7 @@ class UserController extends AbstractController
             $user = $repository->findOneBy(["email" => $data['email']]);
 
             if (isset($user)) {
-                $user->setResetPasswordToken(bin2hex(random_bytes(48)).':'.$user->getEmail().':'.time());
+                $user->setResetPasswordToken(bin2hex(random_bytes(48)) . ':' . $user->getEmail() . ':' . time());
 
                 $entityManager = $this->getDoctrine()->getManager();
                 $entityManager->flush();
@@ -176,22 +176,20 @@ class UserController extends AbstractController
             $tokenEmail = $resetPasswordTokenList[1];
             $tokenTime = $resetPasswordTokenList[2];
 
-            if ($tokenTime + 3600 * 24 > time()) {
-                $repository = $this->getDoctrine()->getRepository(User::class);
-                $user = $repository->findOneBy(["email" => $tokenEmail]);
+            $repository = $this->getDoctrine()->getRepository(User::class);
+            $user = $repository->findOneBy(["email" => $tokenEmail]);
 
-                if ($user->getResetPasswordToken() == $resetPasswordToken) {
-                    $user->setPassword(
-                        $passwordEncoder->encodePassword(
-                            $user,
-                            $form->get('plainPassword')->getData()
-                        )
-                    );
-                    $user->setResetPasswordToken(null);
+            if ($user->getResetPasswordToken() == $resetPasswordToken && $tokenTime + 3600 * 24 > time()) {
+                $user->setPassword(
+                    $passwordEncoder->encodePassword(
+                        $user,
+                        $form->get('plainPassword')->getData()
+                    )
+                );
+                $user->setResetPasswordToken(null);
 
-                    $entityManager = $this->getDoctrine()->getManager();
-                    $entityManager->flush();
-                }
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->flush();
             }
         }
 
