@@ -179,7 +179,7 @@ class User implements UserInterface
         return $this->resetPasswordToken;
     }
 
-    public function setResetPasswordToken(string $resetPasswordToken): self
+    public function setResetPasswordToken(?string $resetPasswordToken): self
     {
         $this->resetPasswordToken = $resetPasswordToken;
 
