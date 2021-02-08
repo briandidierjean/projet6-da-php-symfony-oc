@@ -38,11 +38,8 @@ class TrickGroupController extends AbstractController
     /**
      * @Route("update-group-trick/{id}", name="group_trick_update")
      */
-    public function update(Request $request, $id): Response
+    public function update(Request $request, TrickGroup $trickGroup): Response
     {
-        $repository = $this->getDoctrine()->getRepository(TrickGroup::class);
-        $trickGroup = $repository->findOneBy(["id" => $id]);
-
         $form = $this->createForm(TrickGroupType::class, $trickGroup);
 
         $form->handleRequest($request);
@@ -52,10 +49,20 @@ class TrickGroupController extends AbstractController
             $entityManager->flush();
         }
 
-        dump($trickGroup);
-
         return $this->render('trick-group/update.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    /**
+     * @Route("delete-group-trick/{id}", name="group_trick_delete")
+     */
+    public function delete(TrickGroup $trickGroup): Response
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->remove($trickGroup);
+        $entityManager->flush();
+
+        // Todo: Add a redirect route.
     }
 }
