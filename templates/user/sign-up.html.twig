@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription | SnowTricks{% endblock %}
+
+{% block body %}
+    {{ form_start(form) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.plainPassword) }}
+        {{ form_row(form.firstName) }}
+        {{ form_row(form.lastName) }}
+
+        <button type="submit">S'inscrire</button>
+    {{ form_end(form) }}
+{% endblock %}
