@@ -34,4 +34,28 @@ class TrickGroupController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+    /**
+     * @Route("update-group-trick/{id}", name="group_trick_update")
+     */
+    public function update(Request $request, $id): Response
+    {
+        $repository = $this->getDoctrine()->getRepository(TrickGroup::class);
+        $trickGroup = $repository->findOneBy(["id" => $id]);
+
+        $form = $this->createForm(TrickGroupType::class, $trickGroup);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->flush();
+        }
+
+        dump($trickGroup);
+
+        return $this->render('trick-group/update.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
 }
