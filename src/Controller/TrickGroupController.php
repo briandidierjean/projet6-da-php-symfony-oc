@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\TrickGroup;
 use App\Form\TrickGroupType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,6 +16,7 @@ class TrickGroupController extends AbstractController
 {
     /**
      * @Route("add-group-trick", name="group_trick_add")
+     * @IsGranted("ROLE_ADMIN")
      */
     public function add(Request $request): Response
     {
@@ -37,6 +39,7 @@ class TrickGroupController extends AbstractController
 
     /**
      * @Route("update-group-trick/{id}", name="group_trick_update")
+     * @IsGranted("ROLE_ADMIN")
      */
     public function update(Request $request, TrickGroup $trickGroup): Response
     {
@@ -56,6 +59,7 @@ class TrickGroupController extends AbstractController
 
     /**
      * @Route("delete-group-trick/{id}", name="group_trick_delete")
+     * @IsGranted("ROLE_ADMIN")
      */
     public function delete(TrickGroup $trickGroup): Response
     {
