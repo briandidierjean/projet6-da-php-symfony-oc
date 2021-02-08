@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un groupe de tricks | SnowTricks{% endblock %}
+
+{% block body %}
+    {{ form_start(form) }}
+    {{ form_row(form.name) }}
+
+    <button type="submit">Ajouter</button>
+    {{ form_end(form) }}
+{% endblock %}

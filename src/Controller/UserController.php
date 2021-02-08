@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Form\ChangePasswordType;
 use App\Form\UserType;
 use App\Security\LoginFormAuthenticator;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -83,6 +84,7 @@ class UserController extends AbstractController
 
     /**
      * @Route("change-password", name="user_change_password")
+     * @IsGranted("ROLE_USER")
      */
     public function changePassword(Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
     {
