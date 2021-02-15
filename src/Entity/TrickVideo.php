@@ -5,18 +5,19 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\JoinTable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity()
- * @ORM\Table("trick_groups")
+ * @ORM\Table("trick_videos")
  * @UniqueEntity(
  *     fields="name",
- *     message="Ce groupe existe déjà."
+ *     message="Ce nom de fichier existe déjà."
  * )
  */
-class TrickGroup
+class TrickVideo
 {
     /**
      * @ORM\Id
@@ -28,13 +29,14 @@ class TrickGroup
     /**
      * @ORM\Column(type="string", unique=true)
      * @Assert\NotBlank(
-     *     message="Veuillez saisir un nom."
+     *     message="Veuillez saisir un nom de fichier."
      * )
      */
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Trick", mappedBy="groupTrick")
+     * @ORM\ManyToMany(targetEntity="App\Entity\Trick", inversedBy="trickVideos")
+     * @JoinTable(name="trick_videos_tricks")
      */
     private $tricks;
 

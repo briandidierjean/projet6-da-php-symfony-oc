@@ -138,7 +138,7 @@ class UserController extends AbstractController
                 $entityManager->flush();
 
                 $email = (new Email())
-                    ->from('snowtricks@briandidierjean.dev')
+                    ->from('contact@briandidierjean.dev')
                     ->to($user->getEmail())
                     ->subject('Subject:Réinitialisation de mot de passe')
                     ->text('TEST 122738173813918');
@@ -180,6 +180,7 @@ class UserController extends AbstractController
 
             $repository = $this->getDoctrine()->getRepository(User::class);
             $user = $repository->findOneBy(["email" => $tokenEmail]);
+            //getenv()
 
             if ($user->getResetPasswordToken() == $resetPasswordToken && $tokenTime + 3600 * 24 > time()) {
                 $user->setPassword(
