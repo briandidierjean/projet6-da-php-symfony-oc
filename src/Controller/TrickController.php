@@ -20,17 +20,29 @@ class TrickController extends AbstractController
     /**
      * @Route("", name="trick_home")
      */
-    public function index()
+    public function index(): Response
     {
-        return $this->render('trick/home.html.twig', []);
+        $repository = $this->getDoctrine()->getRepository(Trick::class);
+
+        $tricks = $repository->findAll();
+
+        return $this->render('trick/home.html.twig', [
+            'tricks' => $tricks
+        ]);
     }
 
     /**
-     * @Route("show-trick/{trickId}", name="trick_show")
+     * @Route("show-trick/{id}", name="trick_show")
      */
-    public function show()
+    public function show(Trick $trick): Response
     {
-        return $this->render('trick/show.html.twig', []);
+        $repository = $this->getDoctrine()->getRepository(Trick::class);
+
+        $trick = $repository->find($trick->getId());
+;
+        return $this->render('trick/show.html.twig', [
+            'trick' => $trick
+        ]);
     }
 
     /**
