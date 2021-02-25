@@ -41,7 +41,7 @@ class TrickType extends AbstractType
             ])
             ->add('video', TextType::class, [
                 'label' => 'Video du trick (lien) :',
-                'required' => true,
+                'required' => false,
             ])
         ;
     }

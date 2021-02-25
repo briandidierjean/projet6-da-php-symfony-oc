@@ -46,6 +46,10 @@ class TrickController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $user = $this->getUser();
+
+            $trick->setUser($user);
+
             $photoFiles = $form->get('photos')->getData();
 
             if ($photoFiles) {
@@ -82,15 +86,31 @@ class TrickController extends AbstractController
     /**
      * @Route("update-trick/{id}", name="trick_update")
      */
-    public function update()
+    public function update(Request $request, Trick $trick): Response
     {
-        return $this->render('trick/update.html.twig', []);
+        if (!$this->isGranted('UPDATE', $trick)) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $form = $this->createForm(TrickType::class, $trick);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $trick->setUpdateDate(new \DateTime());
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->flush();
+        }
+
+        return $this->render('trick/update.html.twig', [
+            'form' => $form->createView()
+        ]);
     }
 
     /**
      * @Route("delete-trick/{id}", name="trick_delete")
      */
-    public function delete(Trick $trick)
+    public function delete(Trick $trick): Response
     {
         if (!$this->isGranted('DELETE', $trick)) {
             throw $this->createAccessDeniedException();

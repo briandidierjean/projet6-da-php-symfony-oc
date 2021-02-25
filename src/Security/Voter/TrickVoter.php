@@ -11,7 +11,7 @@ class TrickVoter extends Voter
 {
     protected function supports($attribute, $subject)
     {
-        return in_array($attribute, ['EDIT', 'DELETE'])
+        return in_array($attribute, ['UPDATE', 'DELETE'])
             && $subject instanceof Trick;
     }
 
@@ -25,11 +25,8 @@ class TrickVoter extends Voter
 
         // ... (check conditions and return true to grant permission) ...
         switch ($attribute) {
-            case 'EDIT':
-                // logic to determine if the user can EDIT
-                // return true or false
-                break;
             case 'DELETE':
+            case 'UPDATE':
                 if ($user === $subject->getUser()) {
                     return true;
                 }
