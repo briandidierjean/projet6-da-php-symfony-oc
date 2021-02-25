@@ -141,8 +141,10 @@ class UserController extends AbstractController
                     ->from('contact@briandidierjean.dev')
                     ->to($user->getEmail())
                     ->subject('Subject:Réinitialisation de mot de passe')
-                    ->text('TEST 122738173813918');
+                    ->text('Cliquez sur ce lien pour réinitialiser votre mot de passe : https://projet5-oc.briandidierjean.dev/reset-password/'.$user->getResetPasswordToken());
                 $mailer->send($email);
+
+                //TODO: Add redirection
             }
 
             $errorMsg = 'L\'adresse email n\'existe pas';

@@ -59,18 +59,23 @@ class Trick
     private $creationDate;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\TrickPhoto", mappedBy="tricks")
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $updateDate;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\TrickPhoto", mappedBy="trick")
      */
     private $photos;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\TrickVideo", mappedBy="tricks")
+     * @ORM\Column(type="string")
      */
-    private $videos;
+    private $video;
 
     public function __construct() {
+        $this->creationDate = new \DateTime();
         $this->photos = new ArrayCollection();
-        $this->videos = new ArrayCollection();
     }
 
     public function getId(): int
@@ -138,6 +143,18 @@ class Trick
         return $this;
     }
 
+    public function getUpdateDate(): \DateTime
+    {
+        return $this->updateDate;
+    }
+
+    public function setUpdateDate(\DateTime $updateDate): self
+    {
+        $this->updateDate = $updateDate;
+
+        return $this;
+    }
+
     public function getPhotos(): ArrayCollection
     {
         return $this->photos;
@@ -150,14 +167,14 @@ class Trick
         return $this;
     }
 
-    public function getVideos(): ArrayCollection
+    public function getVideo(): string
     {
-        return $this->videos;
+        return $this->video;
     }
 
-    public function setVideos(ArrayCollection $videos): self
+    public function setVideo(string $video): self
     {
-        $this->videos = $videos;
+        $this->video = $video;
 
         return $this;
     }

@@ -3,5 +3,12 @@
 {% block title %}Accueil | SnowTricks{% endblock %}
 
 {% block body %}
-    <h1>Add</h1>
+    {{ form_start(form) }}
+    {{ form_row(form.name) }}
+    {{ form_row(form.description) }}
+    {{ form_row(form.photos) }}
+    {{ form_row(form.video) }}
+
+    <button type="submit">Ajouter</button>
+    {{ form_end(form) }}
 {% endblock %}

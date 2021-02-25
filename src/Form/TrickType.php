@@ -24,17 +24,20 @@ class TrickType extends AbstractType
                 'label' => 'Description du trick :',
                 'required' => true,
             ])
-            ->add('photo', FileType::class, [
-                'label' => 'Photo n°1 du trick :',
-                'required' => true,
-            ])
-            ->add('photo', FileType::class, [
-                'label' => 'Photo n°2 du trick :',
-                'required' => true,
-            ])
-            ->add('photo', FileType::class, [
-                'label' => 'Photo n°3 du trick :',
-                'required' => true,
+            ->add('photos', FileType::class, [
+                'label' => 'Photos du trick :',
+                'mapped' => false,
+                'required' => false,
+                'multiple' => true,
+                /*'constraints' => [
+                    new File([
+                        'mimeTypes' => [
+                            'image/png',
+                            'image/jpeg',
+                        ],
+                        'mimeTypesMessage' => 'Veuillez poster des photos au format .png ou .jpg.',
+                    ])
+                ],*/
             ])
             ->add('video', TextType::class, [
                 'label' => 'Video du trick (lien) :',

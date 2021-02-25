@@ -3,19 +3,11 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\JoinTable;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity()
  * @ORM\Table("trick_photos")
- * @UniqueEntity(
- *     fields="name",
- *     message="Ce nom de fichier existe déjà."
- * )
  */
 class TrickPhoto
 {
@@ -28,21 +20,15 @@ class TrickPhoto
 
     /**
      * @ORM\Column(type="string", unique=true)
-     * @Assert\NotBlank(
-     *     message="Veuillez saisir un nom de fichier."
-     * )
      */
     private $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Trick", inversedBy="trickPhotos")
-     * @JoinTable(name="trick_photos_tricks")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Trick", inversedBy="trickPhotos")
+     * @ORM\JoinColumn(name="trick_id", referencedColumnName="id")
      */
-    private $tricks;
+    private $trick;
 
-    public function __construct() {
-        $this->tricks = new ArrayCollection();
-    }
 
     public function getId(): int
     {
@@ -61,14 +47,14 @@ class TrickPhoto
         return $this;
     }
 
-    public function getTricks(): ArrayCollection
+    public function getTrick(): Trick
     {
-        return $this->tricks;
+        return $this->trick;
     }
 
-    public function setTricks(ArrayCollection $tricks): self
+    public function setTrick(Trick $trick): self
     {
-        $this->tricks = $tricks;
+        $this->trick = $trick;
 
         return $this;
     }
