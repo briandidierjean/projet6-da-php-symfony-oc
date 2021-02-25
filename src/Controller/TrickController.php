@@ -7,7 +7,6 @@ namespace App\Controller;
 use App\Entity\Trick;
 use App\Entity\TrickPhoto;
 use App\Form\TrickType;
-use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -69,11 +68,10 @@ class TrickController extends AbstractController
                         //TODO : handle exception
                     }
                 }
-
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->persist($trick);
-                $entityManager->flush();
             }
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($trick);
+            $entityManager->flush();
         }
 
         return $this->render('trick/add.html.twig', [
@@ -82,7 +80,7 @@ class TrickController extends AbstractController
     }
 
     /**
-     * @Route("update-trick/{trickId}", name="trick_update")
+     * @Route("update-trick/{id}", name="trick_update")
      */
     public function update()
     {
@@ -90,10 +88,18 @@ class TrickController extends AbstractController
     }
 
     /**
-     * @Route("delete-trick/{trickId}", name="trick_delete")
+     * @Route("delete-trick/{id}", name="trick_delete")
      */
-    public function delete()
+    public function delete(Trick $trick)
     {
+        if (!$this->isGranted('DELETE', $trick)) {
+            throw $this->createAccessDeniedException();
+        }
 
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->remove($trick);
+        $entityManager->flush();
+
+        // Todo: Add a redirect route.
     }
 }
