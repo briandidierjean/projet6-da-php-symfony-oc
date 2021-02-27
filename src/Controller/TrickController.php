@@ -58,6 +58,8 @@ class TrickController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+
             $user = $this->getUser();
 
             $trick->setUser($user);
@@ -80,12 +82,14 @@ class TrickController extends AbstractController
                         $trickPhoto = new TrickPhoto();
                         $trickPhoto->setName($newFilename);
                         $trickPhoto->setTrick($trick);
+
+                        $entityManager->persist($trickPhoto);
+
                     } catch (FileException $e) {
                         //TODO : handle exception
                     }
                 }
             }
-            $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($trick);
             $entityManager->flush();
         }
@@ -98,6 +102,7 @@ class TrickController extends AbstractController
     /**
      * @Route("update-trick/{id}", name="trick_update")
      */
+    //TODO: Mise à jour si on est administrateur
     public function update(Request $request, Trick $trick): Response
     {
         if (!$this->isGranted('UPDATE', $trick)) {

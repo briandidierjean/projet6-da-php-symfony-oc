@@ -114,7 +114,7 @@ class UserController extends AbstractController
     /**
      * @Route("forget-password", name="user_forget_password")
      */
-    public function forgetPassword(Request $request, MailerInterface $mailer): Response
+    public function forgetPassword(Request $request, MailerInterface $mailer, $appSecret, $ciphering, $iv): Response
     {
         $defaultData = [];
         $errorMsg = '';
@@ -132,7 +132,11 @@ class UserController extends AbstractController
             $user = $repository->findOneBy(["email" => $data['email']]);
 
             if (isset($user)) {
-                $user->setResetPasswordToken(bin2hex(random_bytes(48)) . ':' . $user->getEmail() . ':' . time());
+                $resetPasswordToken = bin2hex(random_bytes(48)) . ':' . $user->getEmail() . ':' . time();
+
+                $resetPasswordToken = openssl_encrypt($resetPasswordToken, $ciphering, $appSecret, $options=0, $iv);
+
+                $user->setResetPasswordToken($resetPasswordToken);
 
                 $entityManager = $this->getDoctrine()->getManager();
                 $entityManager->flush();
@@ -141,7 +145,10 @@ class UserController extends AbstractController
                     ->from('contact@briandidierjean.dev')
                     ->to($user->getEmail())
                     ->subject('Subject:Réinitialisation de mot de passe')
-                    ->text('Cliquez sur ce lien pour réinitialiser votre mot de passe : https://projet5-oc.briandidierjean.dev/reset-password/'.$user->getResetPasswordToken());
+                    ->text(
+                        'Cliquez sur ce lien pour réinitialiser votre mot de passe' .
+                        ' : https://projet5-oc.briandidierjean.dev/reset-password/'.base64_encode($user->getResetPasswordToken())
+                    );
                 $mailer->send($email);
 
                 //TODO: Add redirection
@@ -159,7 +166,7 @@ class UserController extends AbstractController
     /**
      * @Route("reset-password/{resetPasswordToken}", name="user_reset_password")
      */
-    public function resetPassword(Request $request, $resetPasswordToken, UserPasswordEncoderInterface $passwordEncoder): Response
+    public function resetPassword(Request $request, $resetPasswordToken, UserPasswordEncoderInterface $passwordEncoder, $appSecret, $ciphering, $iv): Response
     {
         $defaultData = [];
 
@@ -176,13 +183,16 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $resetPasswordToken = base64_decode($resetPasswordToken);
+            $resetPasswordToken = openssl_decrypt($resetPasswordToken, $ciphering, $appSecret, $options=0, $iv);
+
             $resetPasswordTokenList = explode(':', $resetPasswordToken);
             $tokenEmail = $resetPasswordTokenList[1];
             $tokenTime = $resetPasswordTokenList[2];
 
             $repository = $this->getDoctrine()->getRepository(User::class);
             $user = $repository->findOneBy(["email" => $tokenEmail]);
-            //getenv()
 
             if ($user->getResetPasswordToken() == $resetPasswordToken && $tokenTime + 3600 * 24 > time()) {
                 $user->setPassword(
