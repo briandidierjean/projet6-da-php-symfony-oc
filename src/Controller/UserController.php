@@ -138,11 +138,13 @@ class UserController extends AbstractController
                 $entityManager->flush();
 
                 $email = (new Email())
-                    ->from('snowtricks@briandidierjean.dev')
+                    ->from('contact@briandidierjean.dev')
                     ->to($user->getEmail())
                     ->subject('Subject:Réinitialisation de mot de passe')
-                    ->text('TEST 122738173813918');
+                    ->text('Cliquez sur ce lien pour réinitialiser votre mot de passe : https://projet5-oc.briandidierjean.dev/reset-password/'.$user->getResetPasswordToken());
                 $mailer->send($email);
+
+                //TODO: Add redirection
             }
 
             $errorMsg = 'L\'adresse email n\'existe pas';
@@ -180,6 +182,7 @@ class UserController extends AbstractController
 
             $repository = $this->getDoctrine()->getRepository(User::class);
             $user = $repository->findOneBy(["email" => $tokenEmail]);
+            //getenv()
 
             if ($user->getResetPasswordToken() == $resetPasswordToken && $tokenTime + 3600 * 24 > time()) {
                 $user->setPassword(

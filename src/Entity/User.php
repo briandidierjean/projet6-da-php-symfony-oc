@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -67,6 +68,11 @@ class User implements UserInterface
     private $photo;
 
     /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Trick", mappedBy="user")
+     */
+    private $tricks;
+
+    /**
      * @ORM\Column(type="json")
      */
     private $roles = [];
@@ -75,6 +81,10 @@ class User implements UserInterface
      * @ORM\Column(type="string", nullable=true)
      */
     private $resetPasswordToken;
+
+    public function __construct() {
+        $this->tricks = new ArrayCollection();
+    }
 
     public function getId(): int
     {
@@ -154,6 +164,18 @@ class User implements UserInterface
     public function setPhoto(string $photo): self
     {
         $this->photo = $photo;
+
+        return $this;
+    }
+
+    public function getTricks(): ArrayCollection
+    {
+        return $this->tricks;
+    }
+
+    public function setTricks(ArrayCollection $tricks): self
+    {
+        $this->tricks = $tricks;
 
         return $this;
     }

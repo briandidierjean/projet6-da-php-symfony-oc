@@ -3,6 +3,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -12,7 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table("trick_groups")
  * @UniqueEntity(
  *     fields="name",
- *     message="Ce nom est déjà utilisé."
+ *     message="Ce groupe existe déjà."
  * )
  */
 class TrickGroup
@@ -32,6 +33,15 @@ class TrickGroup
      */
     private $name;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Trick", mappedBy="groupTrick")
+     */
+    private $tricks;
+
+    public function __construct() {
+        $this->tricks = new ArrayCollection();
+    }
+
     public function getId(): int
     {
         return $this->id;
@@ -45,6 +55,18 @@ class TrickGroup
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getTricks(): ArrayCollection
+    {
+        return $this->tricks;
+    }
+
+    public function setTricks(ArrayCollection $tricks): self
+    {
+        $this->tricks = $tricks;
 
         return $this;
     }
