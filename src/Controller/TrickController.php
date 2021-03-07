@@ -39,7 +39,7 @@ class TrickController extends AbstractController
         $repository = $this->getDoctrine()->getRepository(Trick::class);
 
         $trick = $repository->find($trick->getId());
-;
+
         return $this->render('trick/show.html.twig', [
             'trick' => $trick
         ]);

@@ -73,6 +73,11 @@ class User implements UserInterface
     private $tricks;
 
     /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Message", mappedBy="user")
+     */
+    private $messages;
+
+    /**
      * @ORM\Column(type="json")
      */
     private $roles = [];
@@ -84,6 +89,7 @@ class User implements UserInterface
 
     public function __construct() {
         $this->tricks = new ArrayCollection();
+        $this->messages = new ArrayCollection();
     }
 
     public function getId(): int
@@ -176,6 +182,18 @@ class User implements UserInterface
     public function setTricks(ArrayCollection $tricks): self
     {
         $this->tricks = $tricks;
+
+        return $this;
+    }
+
+    public function getMessages(): ArrayCollection
+    {
+        return $this->messages;
+    }
+
+    public function setMessages(ArrayCollection $messages): self
+    {
+        $this->messages = $messages;
 
         return $this;
     }

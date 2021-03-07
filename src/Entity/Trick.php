@@ -73,9 +73,15 @@ class Trick
      */
     private $video;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Message", mappedBy="message")
+     */
+    private $messages;
+
     public function __construct() {
         $this->creationDate = new \DateTime();
         $this->photos = new ArrayCollection();
+        $this->messages = new ArrayCollection();
     }
 
     public function getId(): int
@@ -175,6 +181,18 @@ class Trick
     public function setVideo(string $video): self
     {
         $this->video = $video;
+
+        return $this;
+    }
+
+    public function getMessages(): ArrayCollection
+    {
+        return $this->messages;
+    }
+
+    public function setMessages(ArrayCollection $messages): self
+    {
+        $this->messages = $messages;
 
         return $this;
     }
