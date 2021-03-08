@@ -54,6 +54,10 @@ class MessageController extends AbstractController
      */
     public function delete(Message $message): Response
     {
+        if (!$this->isGranted('DELETE', $message)) {
+            throw $this->createAccessDeniedException();
+        }
+
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->remove($message);
         $entityManager->flush();
