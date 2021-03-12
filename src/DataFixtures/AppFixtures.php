@@ -22,7 +22,7 @@ class AppFixtures extends Fixture
         $user->setEmail('test@mail.com');
         $user->setPassword($this->passwordEncoder->encodePassword(
             $user,
-            'password'
+            'Password0'
         ));
         $user->setFirstName('Brian');
         $user->setLastName('Didierjean');
