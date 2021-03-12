@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\ChangePasswordType;
 use App\Form\UserType;
+use App\Repository\UserRepository;
 use App\Security\LoginFormAuthenticator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -114,7 +115,7 @@ class UserController extends AbstractController
     /**
      * @Route("forget-password", name="user_forget_password")
      */
-    public function forgetPassword(Request $request, MailerInterface $mailer, $appSecret, $ciphering, $iv): Response
+    public function forgetPassword(Request $request, UserRepository $userRepository, MailerInterface $mailer, $appSecret, $ciphering, $iv): Response
     {
         $defaultData = [];
         $errorMsg = '';
@@ -128,8 +129,7 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 
-            $repository = $this->getDoctrine()->getRepository(User::class);
-            $user = $repository->findOneBy(["email" => $data['email']]);
+            $user = $userRepository->findOneBy(["email" => $data['email']]);
 
             if (isset($user)) {
                 $resetPasswordToken = bin2hex(random_bytes(48)) . ':' . $user->getEmail() . ':' . time();
@@ -166,7 +166,7 @@ class UserController extends AbstractController
     /**
      * @Route("reset-password/{resetPasswordToken}", name="user_reset_password")
      */
-    public function resetPassword(Request $request, $resetPasswordToken, UserPasswordEncoderInterface $passwordEncoder, $appSecret, $ciphering, $iv): Response
+    public function resetPassword(Request $request, UserRepository $userRepository, $resetPasswordToken, UserPasswordEncoderInterface $passwordEncoder, $appSecret, $ciphering, $iv): Response
     {
         $defaultData = [];
 
@@ -192,7 +192,7 @@ class UserController extends AbstractController
             $tokenTime = $resetPasswordTokenList[2];
 
             $repository = $this->getDoctrine()->getRepository(User::class);
-            $user = $repository->findOneBy(["email" => $tokenEmail]);
+            $user = $userRepository->findOneBy(["email" => $tokenEmail]);
 
             if ($user->getResetPasswordToken() == $resetPasswordToken && $tokenTime + 3600 * 24 > time()) {
                 $user->setPassword(

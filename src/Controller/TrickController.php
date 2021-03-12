@@ -7,6 +7,8 @@ namespace App\Controller;
 use App\Entity\Trick;
 use App\Entity\TrickPhoto;
 use App\Form\TrickType;
+use App\Repository\MessageRepository;
+use App\Repository\TrickRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -20,11 +22,9 @@ class TrickController extends AbstractController
     /**
      * @Route("", name="trick_home")
      */
-    public function index(): Response
+    public function index(TrickRepository $trickRepository): Response
     {
-        $repository = $this->getDoctrine()->getRepository(Trick::class);
-
-        $tricks = $repository->findAll();
+        $tricks = $trickRepository->findAll();
 
         return $this->render('trick/home.html.twig', [
             'tricks' => $tricks
@@ -34,14 +34,14 @@ class TrickController extends AbstractController
     /**
      * @Route("show-trick/{id}", name="trick_show")
      */
-    public function show(Trick $trick): Response
+    public function show(Trick $trick, TrickRepository $trickRepository, MessageRepository $messageRepository): Response
     {
-        $repository = $this->getDoctrine()->getRepository(Trick::class);
-
-        $trick = $repository->find($trick->getId());
+        $trick = $trickRepository->find($trick->getId());
+        $messages = $messageRepository->findBy(["trick" => $trick->getId()]);
 
         return $this->render('trick/show.html.twig', [
-            'trick' => $trick
+            'trick' => $trick,
+            'messages' => $messages
         ]);
     }
 

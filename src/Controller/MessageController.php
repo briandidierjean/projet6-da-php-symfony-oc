@@ -5,8 +5,8 @@ namespace App\Controller;
 
 
 use App\Entity\Message;
-use App\Entity\Trick;
 use App\Form\MessageType;
+use App\Repository\TrickRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,7 +19,7 @@ class MessageController extends AbstractController
      * @Route("add-message/{trickId}", name="message_add")
      * @IsGranted("ROLE_USER")
      */
-    public function add(Request $request, $trickId): Response
+    public function add(Request $request, $trickId, TrickRepository $trickRepository): Response
     {
         $message = new Message();
 
@@ -33,8 +33,7 @@ class MessageController extends AbstractController
             $user = $this->getUser();
             $message->setUser($user);
 
-            $repository = $this->getDoctrine()->getRepository(Trick::class);
-            $trick = $repository->find($trickId);
+            $trick = $trickRepository->find($trickId);
             $message->setTrick($trick);
 
             dump($message);
