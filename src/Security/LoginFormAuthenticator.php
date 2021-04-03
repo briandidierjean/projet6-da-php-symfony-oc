@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAccountStatusException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 use Symfony\Component\Security\Core\Security;
@@ -48,13 +49,13 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
     public function getCredentials(Request $request)
     {
         $credentials = [
-            'email' => $request->request->get('email'),
+            'username' => $request->request->get('username'),
             'password' => $request->request->get('password'),
             'csrf_token' => $request->request->get('_csrf_token'),
         ];
         $request->getSession()->set(
             Security::LAST_USERNAME,
-            $credentials['email']
+            $credentials['username']
         );
 
         return $credentials;
@@ -67,10 +68,14 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
             throw new InvalidCsrfTokenException();
         }
 
-        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $credentials['email']]);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['username' => $credentials['username']]);
 
         if (!$user) {
-            throw new CustomUserMessageAuthenticationException('Email could not be found.');
+            throw new CustomUserMessageAuthenticationException('Pseudo ou mot de passe invalide.');
+        }
+
+        if ($user->getStatus() === User::PENDING_STATUS) {
+            throw new CustomUserMessageAccountStatusException('Veuillez valider votre compte avec le lien envoyé par e-mail');
         }
 
         return $user;
@@ -78,7 +83,11 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
 
     public function checkCredentials($credentials, UserInterface $user)
     {
-        return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
+        if (!$this->passwordEncoder->isPasswordValid($user, $credentials['password'])) {
+            throw new CustomUserMessageAuthenticationException('Pseudo ou mot de passe invalide.');
+        }
+
+        return true;
     }
 
     public function getPassword($credentials): ?string
@@ -92,8 +101,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
             return new RedirectResponse($targetPath);
         }
 
-        // TODO: provide a valid redirect url.
-        throw new \Exception('TODO: provide a valid redirect url.');
+        return new RedirectResponse('/');
     }
 
     protected function getLoginUrl()

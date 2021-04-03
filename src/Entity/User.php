@@ -13,17 +13,38 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="users")
  * @UniqueEntity(
  *     fields="email",
- *     message="Cette adresse e-mail esst déjà utilisée."
+ *     message="Cette adresse e-mail est déjà utilisée."
+ * )
+ * @UniqueEntity(
+ *     fields="username",
+ *     message="Ce pseudo est déjà utilisé."
  * )
  */
 class User implements UserInterface
 {
+    public const PENDING_STATUS = 0;
+    public const VALIDATED_STATUS = 1;
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
     private $id;
+
+    /**
+     * @ORM\Column(type="string", unique=true)
+     * @Assert\NotBlank(
+     *     message="Veuillez choisir un pseudo"
+     * )
+     * @Assert\Length(
+     *     min = 3,
+     *     max = 50,
+     *     minMessage="Votre pseudo doit contenir au moins {{ limit }} caractères.",
+     *     maxMessage="Votre pseudo ne doit pas dépasser {{ limit }} caractères"
+     * )
+     */
+    private $username;
 
     /**
      * @ORM\Column(type="string", unique=true)
@@ -47,22 +68,6 @@ class User implements UserInterface
     private $plainPassword;
 
     /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank(
-     *     message="Veuillez saisir votre prénom."
-     * )
-     */
-    private $firstName;
-
-    /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank(
-     *     message="Veuillez saisir votre nom."
-     * )
-     */
-    private $lastName;
-
-    /**
      * @ORM\Column(type="string", nullable=true)
      */
     private $photo;
@@ -83,6 +88,16 @@ class User implements UserInterface
     private $roles = [];
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private $status = self::PENDING_STATUS;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $registrationToken;
+
+    /**
      * @ORM\Column(type="string", nullable=true)
      */
     private $resetPasswordToken;
@@ -99,7 +114,14 @@ class User implements UserInterface
 
     public function getUsername(): string
     {
-        return $this->email;
+        return $this->username;
+    }
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+
+        return $this;
     }
 
     public function getEmail(): string
@@ -134,30 +156,6 @@ class User implements UserInterface
     public function setPlainPassword(string $plainPassword): self
     {
         $this->plainPassword = $plainPassword;
-
-        return $this;
-    }
-
-    public function getFirstName(): string
-    {
-        return $this->firstName;
-    }
-
-    public function setFirstName(string $firstName): self
-    {
-        $this->firstName = $firstName;
-
-        return $this;
-    }
-
-    public function getLastName(): string
-    {
-        return $this->lastName;
-    }
-
-    public function setLastName(string $lastName): self
-    {
-        $this->lastName = $lastName;
 
         return $this;
     }
@@ -214,6 +212,18 @@ class User implements UserInterface
         return $this;
     }
 
+    public function getStatus(): int
+    {
+        return $this->status;
+    }
+
+    public function setStatus(int $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
     public function getResetPasswordToken(): ?string
     {
         return $this->resetPasswordToken;
@@ -222,6 +232,18 @@ class User implements UserInterface
     public function setResetPasswordToken(?string $resetPasswordToken): self
     {
         $this->resetPasswordToken = $resetPasswordToken;
+
+        return $this;
+    }
+
+    public function getRegistrationToken(): ?string
+    {
+        return $this->registrationToken;
+    }
+
+    public function setRegistrationToken(string $registrationToken): self
+    {
+        $this->registrationToken = $registrationToken;
 
         return $this;
     }

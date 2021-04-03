@@ -4,7 +4,7 @@ security:
         app_users_provider:
             entity:
                 class: App\Entity\User
-                property: email
+                property: username
     encoders:
         App\Entity\User:
             algorithm: auto

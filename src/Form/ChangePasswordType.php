@@ -30,6 +30,7 @@ class ChangePasswordType extends AbstractType
                 'required' => true,
                 'first_options' => ['label' => 'Nouveau mot de passe : '],
                 'second_options' => ['label' => 'Nouveau mot de passe (confirmation) : '],
+                'invalid_message' => 'Les mots de passe ne correspondent pas.'
             ])
         ;
     }
