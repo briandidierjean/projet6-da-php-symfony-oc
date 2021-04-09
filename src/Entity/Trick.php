@@ -69,9 +69,9 @@ class Trick
     private $photos;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\TrickVideo", mappedBy="trick")
      */
-    private $video;
+    private $videos;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Message", mappedBy="message")
@@ -81,6 +81,7 @@ class Trick
     public function __construct() {
         $this->creationDate = new \DateTime();
         $this->photos = new ArrayCollection();
+        $this->videos = new ArrayCollection();
         $this->messages = new ArrayCollection();
     }
 
@@ -173,14 +174,14 @@ class Trick
         return $this;
     }
 
-    public function getVideo(): string
+    public function getVideos(): ArrayCollection
     {
-        return $this->video;
+        return $this->videos;
     }
 
-    public function setVideo(string $video): self
+    public function setVideos(ArrayCollection $videos): self
     {
-        $this->video = $video;
+        $this->videos = $videos;
 
         return $this;
     }

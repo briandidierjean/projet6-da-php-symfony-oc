@@ -1,3 +1,26 @@
 .content {
     flex: 1 0 auto;
 }
+
+.home-header {
+    background: no-repeat center/100% url("../images/hero.jpg");
+    height: calc(100vh - 72px);
+    position: relative;
+}
+
+.home-title {
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #fff;
+    font-size: 3.5rem;
+}
+
+.fa-chevron-down {
+    color: #fff;
+}
+
+.tricks-anchor {
+    position: absolute;
+    bottom: 10px;
+    right: 20px;
+}
