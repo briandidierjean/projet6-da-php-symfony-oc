@@ -4,6 +4,7 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -162,36 +163,36 @@ class Trick
         return $this;
     }
 
-    public function getPhotos(): ArrayCollection
+    public function getPhotos(): Collection
     {
         return $this->photos;
     }
 
-    public function setPhotos(ArrayCollection $photos): self
+    public function setPhotos(Collection $photos): self
     {
         $this->photos = $photos;
 
         return $this;
     }
 
-    public function getVideos(): ArrayCollection
+    public function getVideos(): Collection
     {
         return $this->videos;
     }
 
-    public function setVideos(ArrayCollection $videos): self
+    public function setVideos(Collection $videos): self
     {
         $this->videos = $videos;
 
         return $this;
     }
 
-    public function getMessages(): ArrayCollection
+    public function getMessages(): Collection
     {
         return $this->messages;
     }
 
-    public function setMessages(ArrayCollection $messages): self
+    public function setMessages(Collection $messages): self
     {
         $this->messages = $messages;
 

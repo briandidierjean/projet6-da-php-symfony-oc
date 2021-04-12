@@ -8,6 +8,7 @@ use App\Entity\Trick;
 use App\Entity\TrickPhoto;
 use App\Form\TrickType;
 use App\Repository\MessageRepository;
+use App\Repository\TrickPhotoRepository;
 use App\Repository\TrickRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,11 +25,31 @@ class TrickController extends AbstractController
      */
     public function index(TrickRepository $trickRepository): Response
     {
-        $tricks = $trickRepository->findAll();
+        $tricks = $trickRepository->findBy([], ['creationDate' => 'DESC'], 15, 0);
+
+        dump($tricks);
 
         return $this->render('trick/home.html.twig', [
             'tricks' => $tricks
         ]);
+    }
+
+    /**
+     * @Route("load-more-tricks", methods={"POST"}, name="trick_load_more")
+     */
+    public function loadMore(Request $request, TrickRepository $trickRepository, TrickPhotoRepository $trickPhotoRepository): Response
+    {
+        $offset = json_decode($request->get('offset'));
+        if (isset($offset)) {
+            $tricks = $trickRepository->findBy([], ['creationDate' => 'DESC'], 15, $offset);
+
+            $output = [];
+            foreach ($tricks as $trick) {
+                $photos = $trickPhotoRepository->find($trick->getId());
+                $output[] =  ['name' => $trick->getName(), 'photos' => $photos, 'id' => $trick->getId()];
+            }
+            return new Response(json_encode($output));
+        }
     }
 
     /**

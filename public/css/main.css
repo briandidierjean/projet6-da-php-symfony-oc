@@ -15,12 +15,13 @@
     font-size: 3.5rem;
 }
 
-.fa-chevron-down {
-    color: #fff;
+.tricks-anchor {
+    color: #000;
 }
 
-.tricks-anchor {
+.tricks-anchor-hero {
     position: absolute;
     bottom: 10px;
     right: 20px;
+    color: #fff;
 }

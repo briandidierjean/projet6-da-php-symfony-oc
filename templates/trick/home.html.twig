@@ -6,13 +6,70 @@
     <div class="container-fluid px-0">
         <header class="home-header d-flex flex-column align-items-center justify-content-center">
             <h2 class="home-title">Bienvenue sur SnowTricks !</h2>
-            <a class="tricks-anchor" href="#tricks">
-                <span class="fa fa-chevron-down fa-3x"></span>
-            </a>
+            <a class="tricks-anchor-hero" href="#tricks"><span class="fa fa-arrow-down fa-3x"></span></a>
         </header>
 
-        <div class="row">
-
+        <div id="tricks" class="container-fluid d-flex flex-column my-2">
+            <div id="tricks-container" class="row justify-content-center mx-2 my-4">
+            {% for trick in tricks %}
+                <div class="col-lg-2 mx-4 my-3">
+                    <div class="card">
+                        <a href="">
+                        {% if trick.photos|length > 0 %}
+                            <img class="card-img-top" src="" alt="">
+                        {% else %}
+                            <img class="card-img-top" src="images/default.png" alt="Photo par défaut">
+                        {% endif %}
+                        </a>
+                        <div class="card-body d-flex justify-content-between">
+                            <a href="{{ path('trick_show', {'id': trick.id}) }}">{{ trick.name }}</a>
+                            <a href="{{ path('trick_update', {'id': trick.id}) }}"><i class="fas fa-edit"></i></a>
+                            <a href="{{ path('trick_delete', {'id': trick.id}) }}"><i class="fas fa-trash-alt"></i></a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+            <button id="load-more" class="btn btn-primary align-self-center">Plus</button>
+            <a class="tricks-anchor align-self-end" href="#tricks"><span class="fa fa-arrow-up fa-3x"></span></a>
         </div>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        offset = 15;
+
+        function loadMoreBtnPressed() {
+            $.post('{{ path('trick_load_more') }}',
+                {offset: offset},
+                function(response) {
+                    response.forEach(trick => {
+                        const deletePath = '{{ path('trick_delete', {'id': 'trickId'}) }}'.replace('trickId', trick.id);
+                        const updatePath = '{{ path('trick_update', {'id': 'trickId'}) }}'.replace('trickId', trick.id);
+                        const showPath = '{{ path('trick_show', {'id': 'trickId'}) }}'.replace('trickId', trick.id);
+
+                        let trickThumbnail = '<img class="card-img-top" src="images/default.png" alt="Photo par défaut">';
+
+                        if (trick.photos !== null) {
+                            trickThumbnail = '<p>Void</p><img class="card-img-top" src="" alt="">';
+                        }
+
+                        const trickCard = $('<div class="col-lg-2 mx-4 my-3">' +
+                            '<div class="card">' +
+                            '<a href="">'+trickThumbnail+'</a>' +
+                            '<div class="card-body d-flex justify-content-between">' +
+                            '<a href="'+showPath+'">'+trick.name+'</a>' +
+                            '<a href="'+updatePath+'"><i class="fas fa-edit"></i></a>' +
+                            '<a href="'+deletePath+'"><i class="fas fa-trash-alt"></i></a>' +
+                            '</div>' +
+                            '</div>');
+                       $('#tricks-container').append(trickCard);
+                    });
+                    offset += 15;
+                }, 'json');
+        }
+
+        $('#load-more').on('click', loadMoreBtnPressed);
+    </script>
 {% endblock %}
