@@ -165,6 +165,15 @@ class UserController extends AbstractController
     }
 
     /**
+     * @Route("change-avatar", name="user_change_avatar")
+     * @IsGranted("ROLE_USER")
+     */
+    public function changeAvatar()
+    {
+        return $this->render('user/change-avatar.html.twig', []);
+    }
+
+    /**
      * @Route("forget-password", name="user_forget_password")
      */
     public function forgetPassword(Request $request, UserRepository $userRepository, MailerInterface $mailer, $appSecret, $ciphering, $iv): Response

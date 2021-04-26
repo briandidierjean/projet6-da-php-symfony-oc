@@ -29,6 +29,7 @@ class AppFixtures extends Fixture
             'Password0'
         ));
         $user1->setRoles(['ROLE_ADMIN']);
+        $user1->setStatus(1);
         $manager->persist($user1);
 
         $user2 = new User();
@@ -39,6 +40,7 @@ class AppFixtures extends Fixture
             'Password0'
         ));
         $user2->setRoles(['ROLE_USER']);
+        $user2->setStatus(1);
         $manager->persist($user2);
 
         $trickGroup1 = new TrickGroup();
@@ -52,12 +54,13 @@ class AppFixtures extends Fixture
         for ($i = 1; $i <= 45; $i++) {
             $trick = new Trick();
             $trick->setName('Trick' . $i);
-            $trick->setDescription('Lorem Ipsum...');
+            $trick->setDescription('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi malesuada ullamcorper metus non blandit. Etiam non neque eu elit malesuada tincidunt eget et nulla. Vestibulum rutrum arcu massa, sed pretium mauris maximus ac. In hac habitasse platea dictumst. Curabitur pharetra, nisl vel mollis tempor, tellus urna ornare dui, vel egestas ipsum enim venenatis turpis. Aenean et turpis ac urna commodo malesuada non quis dolor. Fusce rhoncus, metus quis sodales vestibulum, augue tellus placerat tortor, in iaculis turpis sem quis urna. Donec nec augue vel enim varius consectetur consequat eget felis. Ut rutrum metus ligula, in venenatis lectus sollicitudin ac.');
             $trick->setTrickGroup($trickGroup1);
             $trick->setUser($user1);
             $date = new \DateTime();
             $date->add(new DateInterval('P'.$i.'D'));
             $trick->setCreationDate($date);
+            $trick->setUpdateDate($date);
             $manager->persist($trick);
         }
 

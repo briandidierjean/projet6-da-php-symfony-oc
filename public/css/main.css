@@ -2,10 +2,24 @@
     flex: 1 0 auto;
 }
 
+.user-avatar {
+    height: 50px;
+    width: 50px;
+}
+
 .home-header {
-    background: no-repeat center/100% url("../images/hero.jpg");
+    background: no-repeat url("../images/hero.jpg");
+    background-position: top -1200px left -2700px;
     height: calc(100vh - 72px);
     position: relative;
+}
+
+@media screen and (min-width: 1024px) {
+    .home-header {
+        background: no-repeat center/100% url("../images/hero.jpg");
+        height: calc(100vh - 72px);
+        position: relative;
+    }
 }
 
 .home-title {
@@ -24,4 +38,15 @@
     bottom: 10px;
     right: 20px;
     color: #fff;
+}
+
+.trick-card {
+    position: absolute;
+    top: 150px;
+    left: 270px;
+    right: 270px;
+}
+
+.trick-card-img {
+    max-height: 460px;
 }

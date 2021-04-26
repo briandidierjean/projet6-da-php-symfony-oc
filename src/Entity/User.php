@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -172,24 +173,24 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getTricks(): ArrayCollection
+    public function getTricks(): Collection
     {
         return $this->tricks;
     }
 
-    public function setTricks(ArrayCollection $tricks): self
+    public function setTricks(Collection $tricks): self
     {
         $this->tricks = $tricks;
 
         return $this;
     }
 
-    public function getMessages(): ArrayCollection
+    public function getMessages(): Collection
     {
         return $this->messages;
     }
 
-    public function setMessages(ArrayCollection $messages): self
+    public function setMessages(Collection $messages): self
     {
         $this->messages = $messages;
 
@@ -255,4 +256,5 @@ class User implements UserInterface
     public function eraseCredentials()
     {
     }
+
 }

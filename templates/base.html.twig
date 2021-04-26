@@ -7,7 +7,7 @@
               integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
               crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-        <link href="css/main.css" rel="stylesheet">
+        <link href="{{ asset('css/main.css') }}" rel="stylesheet">
     </head>
     <body class="h-100 d-flex flex-column">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-5 py-3">
@@ -17,7 +17,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbar">
-                <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <ul class="navbar-nav mr-auto mt-2 mt-lg-0 align-items-center">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('trick_home') }}">Accueil</a>
                     </li>
@@ -32,12 +32,22 @@
                         <a class="nav-link" href="{{ path('user_sign_up') }}">Inscription</a>
                     </li>
                     {% endif %}
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('trick_group_index') }}">Groupes de tricks</a>
+                        </li>
+                    {% endif %}
                     {% if is_granted('ROLE_USER') %}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ path('user_change_password') }}">Mot de passe</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ path('user_sign_out') }}">Déconnexion</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('user_change_avatar') }}">
+                                <img class="user-avatar" src="{{ asset('images/avatar-placeholder.png') }}" alt="">
+                            </a>
                         </li>
                     {% endif %}
                 </ul>

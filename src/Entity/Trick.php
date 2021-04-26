@@ -27,13 +27,13 @@ class Trick
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\TrickGroup", inversedBy="trick")
+     * @ORM\ManyToOne(targetEntity="App\Entity\TrickGroup", inversedBy="tricks")
      * @ORM\JoinColumn(name="trick_group_id", referencedColumnName="id")
      */
     private $trickGroup;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="trick")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="tricks")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     private $user;
@@ -60,7 +60,7 @@ class Trick
     private $creationDate;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="datetime")
      */
     private $updateDate;
 
@@ -81,6 +81,7 @@ class Trick
 
     public function __construct() {
         $this->creationDate = new \DateTime();
+        $this->updateDate = $this->creationDate;
         $this->photos = new ArrayCollection();
         $this->videos = new ArrayCollection();
         $this->messages = new ArrayCollection();
@@ -198,4 +199,5 @@ class Trick
 
         return $this;
     }
+
 }

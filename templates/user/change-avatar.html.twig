@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Changement d'avatar | SnowTricks{% endblock %}
+
+{% block body %}
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+
+    <div class="container-fluid my-5 content">
+        <div class="row">
+            <div class="col-12 col-md-4 offset-md-4">
+                <h2 class="h2 text-center">Avatar</h2>
+                <div class="card">
+                    <div class="card-body">
+                        <form method="post" action="{{ path('user_change_avatar') }}">
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -10,6 +10,7 @@ use App\Form\TrickType;
 use App\Repository\MessageRepository;
 use App\Repository\TrickPhotoRepository;
 use App\Repository\TrickRepository;
+use App\Repository\TrickVideoRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -27,8 +28,6 @@ class TrickController extends AbstractController
     {
         $tricks = $trickRepository->findBy([], ['creationDate' => 'DESC'], 15, 0);
 
-        dump($tricks);
-
         return $this->render('trick/home.html.twig', [
             'tricks' => $tricks
         ]);
@@ -37,32 +36,48 @@ class TrickController extends AbstractController
     /**
      * @Route("load-more-tricks", methods={"POST"}, name="trick_load_more")
      */
-    public function loadMore(Request $request, TrickRepository $trickRepository, TrickPhotoRepository $trickPhotoRepository): Response
+    public function load(Request $request, TrickRepository $trickRepository, TrickPhotoRepository $trickPhotoRepository): Response
     {
+        $last = false;
+
         $offset = json_decode($request->get('offset'));
         if (isset($offset)) {
             $tricks = $trickRepository->findBy([], ['creationDate' => 'DESC'], 15, $offset);
 
             $output = [];
+            $lastTrick = $trickRepository->findOneBy([], ['creationDate' => 'ASC']);
             foreach ($tricks as $trick) {
+                if ($lastTrick === $trick) {
+                    $last = true;
+                }
                 $photos = $trickPhotoRepository->find($trick->getId());
                 $output[] =  ['name' => $trick->getName(), 'photos' => $photos, 'id' => $trick->getId()];
             }
-            return new Response(json_encode($output));
+
+            return new Response(json_encode(['output' => $output, 'last' => $last]));
         }
     }
 
     /**
      * @Route("show-trick/{id}", name="trick_show")
      */
-    public function show(Trick $trick, TrickRepository $trickRepository, MessageRepository $messageRepository): Response
+    public function show(Trick $trick,
+                         TrickVideoRepository $trickVideoRepository,
+                         MessageRepository $messageRepository,
+                         TrickPhotoRepository $trickPhotoRepository
+    ): Response
     {
-        $trick = $trickRepository->find($trick->getId());
-        $messages = $messageRepository->findBy(["trick" => $trick->getId()]);
+        $trickPhotos = $trickPhotoRepository->find($trick->getId());
+        $trickVideos = $trickVideoRepository->find($trick->getId());
+        $trickMessages = $messageRepository->findBy(["trick" => $trick->getId()]);
+
+        dump($trick);
 
         return $this->render('trick/show.html.twig', [
             'trick' => $trick,
-            'messages' => $messages
+            'trickPhotos' => $trickPhotos,
+            'trickVideos' => $trickVideos,
+            'trickMessages' => $trickMessages
         ]);
     }
 
