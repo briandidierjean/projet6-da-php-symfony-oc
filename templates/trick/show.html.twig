@@ -13,12 +13,12 @@
         <div class="card-body d-flex flex-column">
             <div class="row">
                 <div class="col-lg-6">
-                    {% for trickPhoto in trickPhotos %}
+                    {% for photo in trick.photos %}
                         <img class="card-img-top" src="" alt="">
                     {% endfor %}
                 </div>
                 <div class="col-lg-6">
-                    {% for trickVideo in trickVideos %}
+                    {% for video in trick.videos %}
                         <img class="card-img-top" src="" alt="">
                     {% endfor %}
                 </div>
@@ -34,16 +34,16 @@
                     {% if trick.updateDate is same as(trick.creationDate) %}
                         <p>{{ trick.updateDate | date("d/m/Y") }}</p>
                     {% endif %}
-                    <p>{{ trick.user }}</p>
-                    <p>{{ trick.trickGroup }}</p>
+                    <p>{{ trick.user.username }}</p>
+                    <p>{{ trick.trickGroup.name }}</p>
                 </div>
             </div>
             <br>
             <div class="row">
                 <div class="offset-3 col-6">
-                    {% for trickMessage in trickMessages %}
+                    {% for message in trick.messages %}
                         <div class="card my-2">
-                            <div class="card-body">{{ trickMessage.content }}</div>
+                            <div class="card-body">{{ message.content }}</div>
                         </div>
                     {% endfor %}
                 </div>

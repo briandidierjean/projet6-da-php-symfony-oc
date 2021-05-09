@@ -75,7 +75,7 @@ class Trick
     private $videos;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Message", mappedBy="message")
+     * @ORM\OneToMany(targetEntity="App\Entity\Message", mappedBy="trick")
      */
     private $messages;
 

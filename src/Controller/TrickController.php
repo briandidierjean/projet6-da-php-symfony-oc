@@ -61,23 +61,10 @@ class TrickController extends AbstractController
     /**
      * @Route("show-trick/{id}", name="trick_show")
      */
-    public function show(Trick $trick,
-                         TrickVideoRepository $trickVideoRepository,
-                         MessageRepository $messageRepository,
-                         TrickPhotoRepository $trickPhotoRepository
-    ): Response
+    public function show(Trick $trick): Response
     {
-        $trickPhotos = $trickPhotoRepository->find($trick->getId());
-        $trickVideos = $trickVideoRepository->find($trick->getId());
-        $trickMessages = $messageRepository->findBy(["trick" => $trick->getId()]);
-
-        dump($trick);
-
         return $this->render('trick/show.html.twig', [
             'trick' => $trick,
-            'trickPhotos' => $trickPhotos,
-            'trickVideos' => $trickVideos,
-            'trickMessages' => $trickMessages
         ]);
     }
 
