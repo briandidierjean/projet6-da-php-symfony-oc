@@ -9,10 +9,12 @@ use App\Repository\UserRepository;
 use App\Security\LoginFormAuthenticator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
@@ -21,6 +23,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class UserController extends AbstractController
 {
@@ -168,9 +171,49 @@ class UserController extends AbstractController
      * @Route("change-avatar", name="user_change_avatar")
      * @IsGranted("ROLE_USER")
      */
-    public function changeAvatar()
+    public function changeAvatar(Request $request, SluggerInterface $slugger)
     {
-        return $this->render('user/change-avatar.html.twig', []);
+        $defaultData = [];
+
+        $user = $this->getUser();
+
+        $form = $this->createFormBuilder($defaultData)
+            ->add('avatar', FileType::class, [
+                'required' => true,
+                'label' => 'Votre photo (Moins de 2 Mo)',
+            ])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+
+            $data = $form->getData();
+
+            $originalFilename = pathinfo($data['avatar']->getClientOriginalName(), PATHINFO_FILENAME);
+
+            $safeFilename = $slugger->slug($originalFilename);
+            $newFilename = $safeFilename . '-' . uniqid() . '.' . $data['avatar']->guessExtension();
+
+            try {
+                $data['avatar']->move(
+                    $this->getParameter('photos_directory'),
+                    $newFilename
+                );
+
+                $user->setPhoto($newFilename);
+
+                $entityManager->flush($user);
+
+            } catch (FileException $e) {
+                //TODO : handle exception
+            }
+        }
+
+        return $this->render('user/change-avatar.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 
     /**

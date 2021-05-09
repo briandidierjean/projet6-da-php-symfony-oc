@@ -15,13 +15,38 @@
             <div class="col-12 col-md-4 offset-md-4">
                 <h2 class="h2 text-center">Avatar</h2>
                 <div class="card">
-                    <div class="card-body">
-                        <form method="post" action="{{ path('user_change_avatar') }}">
-
-                        </form>
+                    <div class="card-body d-flex flex-column align-items-center">
+                        <img id="photo-to-upload" class="user-avatar my-1" src="{{ asset('images/avatar-placeholder.png') }}" alt="">
+                        {{ form_start(form) }}
+                        <div class="d-flex flex-column align-items-center my-1">
+                            {{ form_label(form.avatar) }}
+                            {{ form_widget(form.avatar, {'attr': {'class': 'upload-avatar'}}) }}
+                            <button class="btn btn-primary my-1" type="submit">Charger</button>
+                        </div>
+                        {{ form_end(form) }}
                     </div>
                 </div>
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function(e) {
+                    $('#photo-to-upload').attr('src', e.target.result);
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $('.upload-avatar').change(function() {
+            readURL(this);
+        });
+    </script>
 {% endblock %}
