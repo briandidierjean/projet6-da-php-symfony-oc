@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\Trick;
 use App\Entity\TrickGroup;
 use App\Entity\User;
+use App\Entity\Message;
 use DateInterval;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -65,6 +66,14 @@ class AppFixtures extends Fixture
             $date->add(new DateInterval('P'.$i.'D'));
             $trick->setCreationDate($date);
             $trick->setUpdateDate($date);
+            for ($j = 1; $j <= 45; $j++) {
+                $message = new Message();
+                $message->setContent('Lorem ipsum...');
+                $message->setUser($user);
+                $message->setTrick($trick);
+
+                $manager->persist($message);
+            }
             $manager->persist($trick);
         }
 

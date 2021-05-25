@@ -1,53 +1,113 @@
 {% extends 'base.html.twig' %}
 
-{% block title %} | SnowTricks{% endblock %}
+{% block title %} {{ trick.name | upper }} | SnowTricks{% endblock %}
 
 {% block body %}
-    <div class="container-fluid px-0">
-        <header class="home-header d-flex flex-column align-items-center justify-content-center">
-        </header>
-    </div>
-
-    <div class="card trick-card">
-        <img class="card-img-top trick-card-img" src="{{ asset('images/default.png') }}" alt="Photo par défaut">
-        <div class="card-body d-flex flex-column">
-            <div class="row">
-                <div class="col-lg-6">
-                    {% for photo in trick.photos %}
-                        <img class="card-img-top" src="" alt="">
-                    {% endfor %}
-                </div>
-                <div class="col-lg-6">
-                    {% for video in trick.videos %}
-                        <img class="card-img-top" src="" alt="">
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <p>{{ trick.description }}</p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <p>{{ trick.creationDate | date("d/m/Y") }}</p>
-                    {% if trick.updateDate is same as(trick.creationDate) %}
-                        <p>{{ trick.updateDate | date("d/m/Y") }}</p>
-                    {% endif %}
-                    <p>{{ trick.user.username }}</p>
-                    <p>{{ trick.trickGroup.name }}</p>
-                </div>
-            </div>
-            <br>
-            <div class="row">
-                <div class="offset-3 col-6">
-                    {% for message in trick.messages %}
-                        <div class="card my-2">
-                            <div class="card-body">{{ message.content }}</div>
+    <div class="trick-card-container">
+        <div class="card w-50 d-flex m-auto my-5">
+            <img class="card-img-top trick-card-img" src="{{ asset('images/default.png') }}" alt="Photo par défaut">
+            <div class="card-body d-flex flex-column">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="crud-btn-container">
+                            {% if is_granted('UPDATE', trick) or is_granted('ROLE_ADMIN') %}
+                                <a href="{{ path('trick_update', {'id': trick.id}) }}"><i class="fas fa-edit"></i></a>
+                            {% endif %}
+                            {% if is_granted('DELETE', trick) or is_granted('ROLE_ADMIN') %}
+                                <a href="{{ path('trick_delete', {'id': trick.id}) }}"><i class="fas fa-trash-alt"></i></a>
+                            {% endif %}
                         </div>
-                    {% endfor %}
+                        {% for photo in trick.photos %}
+                            <img class="card-img-top" src="" alt="">
+                        {% endfor %}
+                    </div>
+                    <div class="col-lg-6">
+                        {% for video in trick.videos %}
+                            <img class="card-img-top" src="" alt="">
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <h1 class="text-center">{{ trick.name | upper }}</h1>
+                        <div class="col-3 photos-container">
+
+                        </div>
+                        <div class="col-3 videos-container">
+
+                        </div>
+                        <p>{{ trick.description }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-around">
+                        <p>Date de création : <span class="badge bg-primary">{{ trick.creationDate | date("d/m/Y") }}</span></p>
+                        {% if trick.updateDate is same as(trick.creationDate) %}
+                            <p>Date de mise à jour : <span class="badge bg-primary">{{ trick.updateDate | date("d/m/Y") }}</span></p>
+                        {% endif %}
+                        <p>Posté par : <span class="badge bg-primary">{{ trick.user.username }}</span></p>
+                        <p>Groupe : <span class="badge bg-primary">{{ trick.trickGroup.name }}</span></p>
+                    </div>
+                </div>
+                {% if is_granted('ROLE_USER') %}
+                <hr>
+                <div class="row">
+                    <div class="offset-3 col-6">
+                        <form class="d-flex justify-content-between" action="{{ path('message_add', {'id': trick.id}) }}" method="post">
+                            <textarea class="form-control mx-1" rows="1" name="message" min="10" max="255"></textarea>
+                            <button type="submit" class="btn btn-primary mx-1">Commenter</button>
+                        </form>
+                    </div>
+                </div>
+                {% endif %}
+                <hr>
+                <div class="row">
+                    <div class="offset-3 col-6 d-flex flex-column">
+                        <div id="messages-container">
+
+                        </div>
+                        <button id="load-more" class="btn btn-primary align-self-center">Plus</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    offset = 0;
+
+    function loadMessages() {
+        $.post('{{ path('message_load_more') }}',
+            {offset: offset},
+            function(response) {
+                if (response.last) {
+                    $('#load-more').hide();
+                }
+                response.output.forEach(message => {
+                    const deletePath = '{{ path('message_delete', {'id': 'messageId'}) }}'.replace('messageId', message.id);
+
+                    const messageCard = $('<div class="container my-2 d-flex justify-content-between align-items-center">' +
+                        '<div class="user-container d-flex flex-column align-items-center">' +
+                            '<img class="user-avatar mx-1" src="{{ asset('images/avatar-placeholder.png') }}" alt="">' +
+                            '<p class="mb-0">' + message.username + '</p>' +
+                        '</div>' +
+                        '<div class="card w-100 mx-1">' +
+                            '<div class="card-body d-flex justify-content-between">' + message.content+
+                            {% if is_granted('ROLE_USER') %}
+                        '<a href="'+deletePath+'"><i class="fas fa-trash-alt"></i></a>' +
+                            {% endif %}
+                        '</div>' +
+                        '</div>' +
+                    '</div>');
+                    $('#messages-container').append(messageCard);
+                });
+                offset += 10;
+            }, 'json');
+    }
+
+    $(document).ready(loadMessages);
+    $('#load-more').on('click', loadMessages);
+</script>
 {% endblock %}

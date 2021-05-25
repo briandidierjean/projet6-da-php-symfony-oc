@@ -46,8 +46,10 @@
                             '<a href="">'+trickThumbnail+'</a>' +
                             '<div class="card-body d-flex justify-content-between">' +
                             '<a href="'+showPath+'">'+trick.name+'</a>' +
+                                {% if is_granted('ROLE_USER') %}
                             '<a href="'+updatePath+'"><i class="fas fa-edit"></i></a>' +
                             '<a href="'+deletePath+'"><i class="fas fa-trash-alt"></i></a>' +
+                            {% endif %}
                             '</div>' +
                             '</div>');
                        $('#tricks-container').append(trickCard);

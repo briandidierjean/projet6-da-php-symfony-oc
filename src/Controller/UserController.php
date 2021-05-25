@@ -7,6 +7,7 @@ use App\Form\ChangePasswordType;
 use App\Form\UserType;
 use App\Repository\UserRepository;
 use App\Security\LoginFormAuthenticator;
+use App\Service\FilenameGenerator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -171,7 +172,7 @@ class UserController extends AbstractController
      * @Route("change-avatar", name="user_change_avatar")
      * @IsGranted("ROLE_USER")
      */
-    public function changeAvatar(Request $request, SluggerInterface $slugger)
+    public function changeAvatar(Request $request, FilenameGenerator $filenameGenerator)
     {
         $defaultData = [];
 
@@ -191,24 +192,11 @@ class UserController extends AbstractController
 
             $data = $form->getData();
 
-            $originalFilename = pathinfo($data['avatar']->getClientOriginalName(), PATHINFO_FILENAME);
-
-            $safeFilename = $slugger->slug($originalFilename);
-            $newFilename = $safeFilename . '-' . uniqid() . '.' . $data['avatar']->guessExtension();
-
-            try {
-                $data['avatar']->move(
-                    $this->getParameter('photos_directory'),
-                    $newFilename
-                );
+            $newFilename = $filenameGenerator->generate($data['avatar']);
 
                 $user->setPhoto($newFilename);
 
                 $entityManager->flush($user);
-
-            } catch (FileException $e) {
-                //TODO : handle exception
-            }
         }
 
         return $this->render('user/change-avatar.html.twig', [

@@ -11,7 +11,6 @@
     background: no-repeat url("../images/hero.jpg");
     background-position: top -1200px left -2700px;
     height: calc(100vh - 72px);
-    position: relative;
 }
 
 @media screen and (min-width: 1024px) {
@@ -40,13 +39,17 @@
     color: #fff;
 }
 
-.trick-card {
-    position: absolute;
-    top: 150px;
-    left: 270px;
-    right: 270px;
+.trick-card-container {
+    background: no-repeat center/100% url("../images/hero.jpg");
+    background-position: top;
 }
 
-.trick-card-img {
-    max-height: 460px;
+.crud-btn-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.trick-description > textarea {
+    height: 200px;
 }

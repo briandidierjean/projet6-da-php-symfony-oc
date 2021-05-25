@@ -8,17 +8,16 @@
             <div class="col-12 col-md-4 offset-md-4 d-flex flex-column align-items-center">
                 <h2 class="h2 text-center">Groupes de tricks</h2>
                 <hr>
-                    <form class="trick-group-add-form" method="post" action="{{ path('trick_group_add') }}">
-                        <label for="add-trick-group"></label>
-                        <input id="add-trick-group" name="name" type="text" placeholder="Nom de groupe">
-                        <button class="btn btn-primary" type="submit"><i class="fas fa-plus"></i></button>
+                    <form class="trick-group-add-form d-flex" method="post" action="{{ path('trick_group_add') }}">
+                        <input class="form-control mx-1" id="add-trick-group" name="name" type="text" placeholder="Nom de groupe">
+                        <button class="btn btn-primary mx-1" type="submit"><i class="fas fa-plus"></i></button>
                     </form>
                     <br>
                     {% for trickGroup in trickGroups %}
-                        <form class="trick-group-form my-1" method="post" action="{{ path('trick_group_update', {'id': trickGroup.id}) }}">
-                            <input id="rename-trick-group" type="text" name="name" value="{{ trickGroup.name }}">
-                            <button class="btn btn-primary" type="submit"><i class="fas fa-edit"></i></button>
-                            <a class="btn btn-primary" href="{{ path('trick_group_delete', {'id': trickGroup.id}) }}"><i class="fas fa-trash-alt"></i></a>
+                        <form class="trick-group-form my-1 d-flex" method="post" action="{{ path('trick_group_update', {'id': trickGroup.id}) }}">
+                            <input class="form-control mx-1" id="rename-trick-group" type="text" name="name" value="{{ trickGroup.name }}">
+                            <button class="btn btn-primary mx-1" type="submit"><i class="fas fa-edit"></i></button>
+                            <a class="btn btn-primary mx-1" href="{{ path('trick_group_delete', {'id': trickGroup.id}) }}"><i class="fas fa-trash-alt"></i></a>
                         </form>
                     {% endfor %}
             </div>
