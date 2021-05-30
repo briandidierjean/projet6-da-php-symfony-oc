@@ -37,8 +37,8 @@
 
                         let trickThumbnail = '<img class="card-img-top" src="{{ asset('images/default.png') }}" alt="Photo par défaut">';
 
-                        if (trick.photos !== null) {
-                            trickThumbnail = '<p>Void</p><img class="card-img-top" src="" alt="">';
+                        if (trick.photos.length > 0) {
+                            trickThumbnail = '<img class="card-img-top" src="'+trick.photos[0]+'" alt="">';
                         }
 
                         const trickCard = $('<div class="col-lg-2 mx-4 my-3">' +
