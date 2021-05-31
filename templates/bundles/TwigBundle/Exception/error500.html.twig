@@ -1,0 +1,19 @@
+{# templates/bundles/TwigBundle/Exception/error500.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Erreur interne{% endblock %}
+
+{% block body %}
+    <div class="container-fluid my-5 content">
+        <div class="row">
+            <div class="col-12 col-md-4 offset-md-4 text-center">
+                <h2>Erreur interne</h2>
+
+                <p>
+                    Une erreur interne s'est produite<br>
+                    <a href="{{ path('trick_home') }}">Retourner à la page d'accueil</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
