@@ -53,7 +53,7 @@ class TrickController extends AbstractController
                 if ($lastTrick === $trick) {
                     $last = true;
                 }
-                $photos = $trickPhotoRepository->find($trick->getId());
+                $photos = $trickPhotoRepository->findBy(['trick' => $trick->getId()]);
                 if ($photos === null)
                 {
                     $photos = [];
