@@ -10,6 +10,10 @@ Copier le contenu du fichier .env dans un nouveau fichier nommé .env.local
 
 Mettre la valeur APP_ENV=prod
 
+Ajouter la valeur CIPHERING=BF-CBC
+
+Ajouter la valeur IV=(Entrer un numéro de 8 chiffres)
+
 Ajouter un serveur de base de données MySQL dans le fichier .env.local
 
 Ajouter un serveur smtp dans le fichier .env.local
