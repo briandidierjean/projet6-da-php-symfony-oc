@@ -160,7 +160,7 @@ class TrickController extends AbstractController
     /**
      * @Route("update-trick/{name}", name="trick_update")
      */
-    public function update(Request $request, Trick $trick, Security $security): Response
+    public function update(Request $request, Trick $trick, Security $security, FilenameGenerator $filenameGenerator): Response
     {
         if (!$security->isGranted('ROLE_ADMIN')) {
             if (!$this->isGranted('UPDATE', $trick)) {
@@ -173,6 +173,59 @@ class TrickController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+
+            $mainPhotoFile = $form->get('mainPhoto')->getData();
+            if ($mainPhotoFile) {
+                if (!$filenameGenerator->checkPhotoExt($mainPhotoFile)) {
+                    return $this->render('trick/add.html.twig', [
+                        'form' => $form->createView(),
+                    ]);
+                }
+                $newFilename = $filenameGenerator->generate($mainPhotoFile);
+                $trick->setMainPhoto($newFilename);
+            }
+
+            $photoFiles = $form->get('photos')->getData();
+            if ($photoFiles) {
+                foreach ($photoFiles as $photoFile) {
+
+                    if (!$filenameGenerator->checkPhotoExt($photoFile)) {
+                        return $this->render('trick/add.html.twig', [
+                            'form' => $form->createView(),
+                        ]);
+                    }
+
+                    $newFilename = $filenameGenerator->generate($photoFile);
+
+                    $trickPhoto = new TrickPhoto();
+                    $trickPhoto->setName($newFilename);
+                    $trickPhoto->setTrick($trick);
+
+                    $entityManager->persist($trickPhoto);
+                }
+            }
+
+            $videoFiles = $form->get('videos')->getData();
+            if ($videoFiles) {
+                foreach ($videoFiles as $videoFile) {
+
+                    if (!$filenameGenerator->checkVideoExt($videoFile)) {
+                        return $this->render('trick/add.html.twig', [
+                            'form' => $form->createView(),
+                        ]);
+                    }
+
+                    $newFilename = $filenameGenerator->generate($videoFile);
+
+                    $trickVideo = new TrickVideo();
+                    $trickVideo->setName($newFilename);
+                    $trickVideo->setTrick($trick);
+
+                    $entityManager->persist($trickVideo);
+                }
+            }
+
             $trick->setUpdateDate(new \DateTime());
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->flush();
