@@ -1,0 +1,55 @@
+.content {
+    flex: 1 0 auto;
+}
+
+.user-avatar {
+    height: 50px;
+    width: 50px;
+}
+
+.home-header {
+    background: no-repeat url("../images/hero.jpg");
+    background-position: top -1200px left -2700px;
+    height: calc(100vh - 72px);
+}
+
+@media screen and (min-width: 1024px) {
+    .home-header {
+        background: no-repeat center/100% url("../images/hero.jpg");
+        height: calc(100vh - 72px);
+        position: relative;
+    }
+}
+
+.home-title {
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #fff;
+    font-size: 3.5rem;
+}
+
+.tricks-anchor {
+    color: #000;
+}
+
+.tricks-anchor-hero {
+    position: absolute;
+    bottom: 10px;
+    right: 20px;
+    color: #fff;
+}
+
+.trick-card-container {
+    background: no-repeat center/100% url("../images/hero.jpg");
+    background-position: top;
+}
+
+.crud-btn-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.trick-description > textarea {
+    height: 200px;
+}

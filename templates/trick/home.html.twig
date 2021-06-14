@@ -3,5 +3,62 @@
 {% block title %}Accueil | SnowTricks{% endblock %}
 
 {% block body %}
-<h1>Test</h1>
+    <div class="container-fluid px-0">
+        <header class="home-header d-flex flex-column align-items-center justify-content-center">
+            <h2 class="home-title">Bienvenue sur SnowTricks !</h2>
+            <a class="tricks-anchor-hero" href="#tricks"><span class="fa fa-arrow-down fa-3x"></span></a>
+        </header>
+
+        <div id="tricks" class="container-fluid d-flex flex-column my-2">
+            <div id="tricks-container" class="row justify-content-center mx-2 my-4">
+
+            </div>
+            <button id="load-more" class="btn btn-primary align-self-center">Plus</button>
+            <a class="tricks-anchor align-self-end" href="#tricks"><span class="fa fa-arrow-up fa-3x"></span></a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        offset = 0;
+
+        function loadTricks() {
+            $.post('{{ path('trick_load_more') }}',
+                {offset: offset},
+                function(response) {
+                    if (response.last) {
+                        $('#load-more').hide();
+                    }
+                    response.output.forEach(trick => {
+                        const deletePath = '{{ path('trick_delete', {'id': 'trickId'}) }}'.replace('trickId', trick.id);
+                        const updatePath = '{{ path('trick_update', {'id': 'trickId'}) }}'.replace('trickId', trick.id);
+                        const showPath = '{{ path('trick_show', {'id': 'trickId'}) }}'.replace('trickId', trick.id);
+
+                        let trickThumbnail = '<img class="card-img-top" src="{{ asset('images/default.png') }}" alt="Photo par défaut">';
+
+                        if (trick.photos !== null) {
+                            trickThumbnail = '<p>Void</p><img class="card-img-top" src="" alt="">';
+                        }
+
+                        const trickCard = $('<div class="col-lg-2 mx-4 my-3">' +
+                            '<div class="card">' +
+                            '<a href="">'+trickThumbnail+'</a>' +
+                            '<div class="card-body d-flex justify-content-between">' +
+                            '<a href="'+showPath+'">'+trick.name+'</a>' +
+                                {% if is_granted('ROLE_USER') %}
+                            '<a href="'+updatePath+'"><i class="fas fa-edit"></i></a>' +
+                            '<a href="'+deletePath+'"><i class="fas fa-trash-alt"></i></a>' +
+                            {% endif %}
+                            '</div>' +
+                            '</div>');
+                       $('#tricks-container').append(trickCard);
+                    });
+                    offset += 15;
+                }, 'json');
+        }
+
+        $(document).ready(loadTricks);
+        $('#load-more').on('click', loadTricks);
+    </script>
 {% endblock %}

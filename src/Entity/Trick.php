@@ -4,6 +4,7 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -26,13 +27,13 @@ class Trick
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\TrickGroup", inversedBy="trick")
+     * @ORM\ManyToOne(targetEntity="App\Entity\TrickGroup", inversedBy="tricks")
      * @ORM\JoinColumn(name="trick_group_id", referencedColumnName="id")
      */
     private $trickGroup;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="trick")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="tricks")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     private $user;
@@ -59,7 +60,7 @@ class Trick
     private $creationDate;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="datetime")
      */
     private $updateDate;
 
@@ -69,18 +70,20 @@ class Trick
     private $photos;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\TrickVideo", mappedBy="trick")
      */
-    private $video;
+    private $videos;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Message", mappedBy="message")
+     * @ORM\OneToMany(targetEntity="App\Entity\Message", mappedBy="trick")
      */
     private $messages;
 
     public function __construct() {
         $this->creationDate = new \DateTime();
+        $this->updateDate = $this->creationDate;
         $this->photos = new ArrayCollection();
+        $this->videos = new ArrayCollection();
         $this->messages = new ArrayCollection();
     }
 
@@ -161,39 +164,40 @@ class Trick
         return $this;
     }
 
-    public function getPhotos(): ArrayCollection
+    public function getPhotos(): Collection
     {
         return $this->photos;
     }
 
-    public function setPhotos(ArrayCollection $photos): self
+    public function setPhotos(Collection $photos): self
     {
         $this->photos = $photos;
 
         return $this;
     }
 
-    public function getVideo(): string
+    public function getVideos(): Collection
     {
-        return $this->video;
+        return $this->videos;
     }
 
-    public function setVideo(string $video): self
+    public function setVideos(Collection $videos): self
     {
-        $this->video = $video;
+        $this->videos = $videos;
 
         return $this;
     }
 
-    public function getMessages(): ArrayCollection
+    public function getMessages(): Collection
     {
         return $this->messages;
     }
 
-    public function setMessages(ArrayCollection $messages): self
+    public function setMessages(Collection $messages): self
     {
         $this->messages = $messages;
 
         return $this;
     }
+
 }
