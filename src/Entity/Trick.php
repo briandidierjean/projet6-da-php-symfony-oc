@@ -65,6 +65,11 @@ class Trick
     private $updateDate;
 
     /**
+     * @ORM\Column(type="string")
+     */
+    private $mainPhoto;
+
+    /**
      * @ORM\OneToMany(targetEntity="App\Entity\TrickPhoto", mappedBy="trick")
      */
     private $photos;
@@ -164,6 +169,18 @@ class Trick
         return $this;
     }
 
+    public function getMainPhoto(): string
+    {
+        return $this->mainPhoto;
+    }
+
+    public function setMainPhoto(string $mainPhoto): self
+    {
+        $this->mainPhoto = $mainPhoto;
+
+        return $this;
+    }
+
     public function getPhotos(): Collection
     {
         return $this->photos;
@@ -176,9 +193,27 @@ class Trick
         return $this;
     }
 
+    public function addPhoto(TrickPhoto $photo): self
+    {
+        if (!$this->photos->contains($photo)) {
+            $this->photos[] = $photo;
+        }
+
+        return $this;
+    }
+
     public function getVideos(): Collection
     {
         return $this->videos;
+    }
+
+    public function addVideo(TrickVideo $video): self
+    {
+        if (!$this->videos->contains($video)) {
+            $this->videos[] = $video;
+        }
+
+        return $this;
     }
 
     public function setVideos(Collection $videos): self

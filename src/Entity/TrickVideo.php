@@ -19,13 +19,13 @@ class TrickVideo
     private $id;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", unique=true)
      */
-    private $link;
+    private $name;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Trick", inversedBy="trickVideos")
-     * @ORM\JoinColumn(name="trick_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="trick_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $trick;
 
@@ -35,14 +35,14 @@ class TrickVideo
         return $this->id;
     }
 
-    public function getLink(): string
+    public function getName(): string
     {
-        return $this->link;
+        return $this->name;
     }
 
-    public function setLink(string $link): self
+    public function setName(string $name): self
     {
-        $this->link = $link;
+        $this->name = $name;
 
         return $this;
     }

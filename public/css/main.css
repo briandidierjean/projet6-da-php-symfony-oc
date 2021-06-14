@@ -39,9 +39,74 @@
     color: #fff;
 }
 
-.trick-card-container {
-    background: no-repeat center/100% url("../images/hero.jpg");
-    background-position: top;
+.trick-thumbnail {
+    height: 170px;
+}
+
+.no-content {
+    border: 2px solid;
+}
+
+.trick-card-img {
+    max-height: 1200px;
+}
+
+.delete-media-container {
+    position: relative;
+}
+
+.delete-media-btn {
+    position: absolute;
+    top: 4px;
+    left: 10px;
+}
+
+.trick-photo,
+.trick-video {
+    width: 220px;
+    height: 140px;
+}
+
+.trick-video-content {
+    height: 140px;
+}
+
+.see-media-btn {
+    display: none;
+}
+
+@media screen and (max-width: 921px) {
+    .photos-container,
+    .videos-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+     #media-container {
+         display: none;
+     }
+
+    .trick-photo,
+    .trick-video {
+        width: 50%;
+        height: auto;
+        margin: 8px 0;
+    }
+
+    .see-media-btn {
+        display: block;
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    .trick-card-container {
+        background: no-repeat center/100% url("../images/hero.jpg");
+        background-position: top;
+    }
+
+    .trick-card {
+        width: 75%;
+    }
 }
 
 .crud-btn-container {

@@ -25,7 +25,7 @@ class TrickPhoto
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Trick", inversedBy="trickPhotos")
-     * @ORM\JoinColumn(name="trick_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="trick_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $trick;
 

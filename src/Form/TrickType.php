@@ -27,21 +27,28 @@ class TrickType extends AbstractType
                 'label' => 'Description du trick :',
                 'required' => true,
             ])
+            ->add('mainPhoto', FileType::class, [
+                'label' => 'Photo de couverture du trick :',
+                'required' => false,
+                'mapped' => false,
+            ])
             ->add('photos', FileType::class, [
                 'label' => 'Photos du trick :',
                 'mapped' => false,
                 'required' => false,
                 'multiple' => true,
             ])
-            ->add('videos', TextType::class, [
-                'label' => 'Video du trick (lien) :',
+            ->add('videos', FileType::class, [
+                'label' => 'Videos du trick :',
+                'mapped' => false,
                 'required' => false,
+                'multiple' => true,
             ])
             ->add('trickGroup',EntityType::class, [
                 'class' => TrickGroup::class,
                 'choice_label'=> 'name',
                 'label'=> 'Groupe du trick',
-                'required'=> true,
+                'required' => true,
             ]);
         ;
     }
