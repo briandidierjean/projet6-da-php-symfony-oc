@@ -36,11 +36,6 @@ class Message
     private $creationDate;
 
     /**
-     * @ORM\Column(type="datetime")
-     */
-    private $updateDate;
-
-    /**
      * @ORM\Column(type="text")
      */
     private $content;
@@ -48,7 +43,6 @@ class Message
     public function __construct()
     {
         $this->creationDate = new \DateTime();
-        $this->updateDate = $this->creationDate;
     }
 
     public function getId(): int
@@ -88,18 +82,6 @@ class Message
     public function setCreationDate(\DateTime $creationDate): self
     {
         $this->creationDate = $creationDate;
-
-        return $this;
-    }
-
-    public function getUpdateDate(): \DateTime
-    {
-        return $this->updateDate;
-    }
-
-    public function setUpdateDate(\DateTime $updateDate): self
-    {
-        $this->updateDate = $updateDate;
 
         return $this;
     }

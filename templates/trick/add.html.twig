@@ -1,14 +1,59 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil | SnowTricks{% endblock %}
+{% block title %}Ajouter un Trick | SnowTricks{% endblock %}
 
 {% block body %}
-    {{ form_start(form) }}
-    {{ form_row(form.name) }}
-    {{ form_row(form.description) }}
-    {{ form_row(form.photos) }}
-    {{ form_row(form.video) }}
+    <div class="trick-card-container">
+        <div class="trick-card card d-flex m-auto my-5 align-items-center">
+            {{ form_start(form) }}
+            <img id="mainPhoto-to-upload" class="card-img-top trick-card-img" src="{{ asset('images/default.png') }}">
+            <div class="text-center">
+                {{ form_label(form.mainPhoto) }}
+                {{ form_widget(form.mainPhoto, {'attr': {'class': 'upload-mainPhoto'}}) }}
+            </div>
+            <div class="card-body d-flex flex-column">
+                <div class="row my-2">
+                    <div class="col">
+                        {{ form_row(form.name) }}
+                    </div>
+                </div>
+                <div class="row my-2">
+                    <div class="col-6 photos-container">
+                        {{ form_row(form.photos) }}
+                    </div>
+                    <div class="col-6 videos-container">
+                        {{ form_row(form.videos) }}
+                    </div>
+                </div>
+                <div class="row">
+                    {{ form_row(form.description) }}
+                </div>
+                <div class="row">
+                    <p>{{ form_row(form.trickGroup) }}</p>
+                </div>
 
-    <button type="submit">Ajouter</button>
-    {{ form_end(form) }}
+                <button class="btn btn-primary" type="submit">Ajouter</button>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function(e) {
+                    $('#mainPhoto-to-upload').attr('src', e.target.result);
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $('.upload-mainPhoto').change(function() {
+            readURL(this);
+        });
+    </script>
 {% endblock %}

@@ -10,13 +10,34 @@ class FilenameGenerator
     /**
      * @var string
      */
-    private string $photos_directory;
     private $slugger;
 
-    public function __construct(string $photos_directory, SluggerInterface $slugger)
+    public function __construct(string $uploads_directory, SluggerInterface $slugger)
     {
-        $this->photos_directory = $photos_directory;
+        $this->uploads_directory = $uploads_directory;
         $this->slugger = $slugger;
+    }
+
+    public function checkPhotoExt($file)
+    {
+        if ($file->guessExtension() !== '.jpeg' &&
+            $file->guessExtension() !== '.jpg' &&
+            $file->guessExtension() !== '.png') {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function checkVideoExt($file)
+    {
+        if ($file->guessExtension() !== '.mp4' &&
+            $file->guessExtension() !== '.ogv' &&
+            $file->guessExtension() !== '.webm') {
+            return false;
+        }
+
+        return true;
     }
 
     public function generate($file)
@@ -28,11 +49,11 @@ class FilenameGenerator
 
         try {
             $file->move(
-                $this->photos_directory,
+                $this->uploads_directory,
                 $newFilename
             );
         } catch (FileException $e) {
-            //TODO : handle exception
+            throw new \Exception('Something went wrong!');
         }
 
         return $newFilename;

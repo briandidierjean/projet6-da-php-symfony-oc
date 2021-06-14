@@ -6,7 +6,6 @@ use App\Entity\User;
 use App\Form\ChangePasswordType;
 use App\Form\UserType;
 use App\Repository\UserRepository;
-use App\Security\LoginFormAuthenticator;
 use App\Service\FilenameGenerator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,16 +14,13 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 class UserController extends AbstractController
 {
@@ -95,6 +91,8 @@ class UserController extends AbstractController
                     https://projet5-oc.briandidierjean.dev/validate-registration/'.base64_encode($user->getRegistrationToken())
                 );
             $mailer->send($email);
+
+            $this->redirectToRoute('trick_home');
         }
 
         return $this->render('user/sign-up.html.twig', [
@@ -191,6 +189,13 @@ class UserController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
 
             $data = $form->getData();
+
+            if (!$filenameGenerator->checkPhotoExt($data['avatar'])) {
+                $this->addFlash(
+                    'danger',
+                    'Le format est de photo est incorrect.'
+                );
+            }
 
             $newFilename = $filenameGenerator->generate($data['avatar']);
 

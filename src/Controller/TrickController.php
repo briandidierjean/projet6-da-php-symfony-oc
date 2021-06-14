@@ -6,21 +6,17 @@ namespace App\Controller;
 
 use App\Entity\Trick;
 use App\Entity\TrickPhoto;
+use App\Entity\TrickVideo;
 use App\Form\TrickType;
-use App\Repository\MessageRepository;
 use App\Repository\TrickPhotoRepository;
 use App\Repository\TrickRepository;
-use App\Repository\TrickVideoRepository;
 use App\Service\FilenameGenerator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 class TrickController extends AbstractController
 {
@@ -41,11 +37,15 @@ class TrickController extends AbstractController
      */
     public function load(Request $request, TrickRepository $trickRepository, TrickPhotoRepository $trickPhotoRepository): Response
     {
-        $last = false;
+        $last = true;
 
         $offset = json_decode($request->get('offset'));
         if (isset($offset)) {
             $tricks = $trickRepository->findBy([], ['creationDate' => 'DESC'], 15, $offset);
+
+            if ($tricks) {
+                $last = false;
+            }
 
             $output = [];
             $lastTrick = $trickRepository->findOneBy([], ['creationDate' => 'ASC']);
@@ -54,19 +54,20 @@ class TrickController extends AbstractController
                     $last = true;
                 }
                 $photos = $trickPhotoRepository->findBy(['trick' => $trick->getId()]);
-                if ($photos === null)
-                {
-                    $photos = [];
+                $photosNames = [];
+                if ($photos !== null) {
+                    foreach ($photos as $photo) {
+                        $photosNames[] = ['name' => $photo->getName()];
+                    }
                 }
-                $output[] =  ['name' => $trick->getName(), 'photos' => $photos, 'id' => $trick->getId()];
+                $output[] =  ['name' => $trick->getName(), 'mainPhoto' => $trick->getMainPhoto(), 'photos' => $photosNames, 'id' => $trick->getId()];
             }
-
             return new Response(json_encode(['output' => $output, 'last' => $last]));
         }
     }
 
     /**
-     * @Route("show-trick/{id}", name="trick_show")
+     * @Route("show-trick/{name}", name="trick_show")
      */
     public function show(Trick $trick): Response
     {
@@ -79,7 +80,7 @@ class TrickController extends AbstractController
      * @Route("add-trick", name="trick_add")
      * @IsGranted("ROLE_USER")
      */
-    public function add(Request $request): Response
+    public function add(Request $request, FilenameGenerator $filenameGenerator): Response
     {
         $trick = new Trick();
 
@@ -94,12 +95,28 @@ class TrickController extends AbstractController
 
             $trick->setUser($user);
 
-            $photoFiles = $form->get('photos')->getData();
+            $mainPhotoFile = $form->get('mainPhoto')->getData();
+            if ($mainPhotoFile) {
+                if (!$filenameGenerator->checkPhotoExt($mainPhotoFile)) {
+                    return $this->render('trick/add.html.twig', [
+                        'form' => $form->createView(),
+                    ]);
+                }
+                $newFilename = $filenameGenerator->generate($mainPhotoFile);
+                $trick->setMainPhoto($newFilename);
+            }
 
+            $photoFiles = $form->get('photos')->getData();
             if ($photoFiles) {
                 foreach ($photoFiles as $photoFile) {
 
-                    $newFilename = FilenameGenerator::generate($photoFile);
+                    if (!$filenameGenerator->checkPhotoExt($photoFile)) {
+                        return $this->render('trick/add.html.twig', [
+                            'form' => $form->createView(),
+                        ]);
+                    }
+
+                    $newFilename = $filenameGenerator->generate($photoFile);
 
                         $trickPhoto = new TrickPhoto();
                         $trickPhoto->setName($newFilename);
@@ -108,8 +125,31 @@ class TrickController extends AbstractController
                         $entityManager->persist($trickPhoto);
                 }
             }
+
+            $videoFiles = $form->get('videos')->getData();
+            if ($videoFiles) {
+                foreach ($videoFiles as $videoFile) {
+
+                    if (!$filenameGenerator->checkVideoExt($videoFile)) {
+                        return $this->render('trick/add.html.twig', [
+                            'form' => $form->createView(),
+                        ]);
+                    }
+
+                    $newFilename = $filenameGenerator->generate($videoFile);
+
+                    $trickVideo = new TrickVideo();
+                    $trickVideo->setName($newFilename);
+                    $trickVideo->setTrick($trick);
+
+                    $entityManager->persist($trickVideo);
+                }
+            }
+
             $entityManager->persist($trick);
             $entityManager->flush();
+
+            return $this->redirectToRoute('trick_home');
         }
 
         return $this->render('trick/add.html.twig', [
@@ -118,7 +158,7 @@ class TrickController extends AbstractController
     }
 
     /**
-     * @Route("update-trick/{id}", name="trick_update")
+     * @Route("update-trick/{name}", name="trick_update")
      */
     public function update(Request $request, Trick $trick, Security $security): Response
     {
@@ -136,16 +176,18 @@ class TrickController extends AbstractController
             $trick->setUpdateDate(new \DateTime());
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->flush();
+
+            return $this->redirectToRoute('trick_home');
         }
 
         return $this->render('trick/update.html.twig', [
             'form' => $form->createView(),
-            'trick' => $trick
+            'trick' => $trick,
         ]);
     }
 
     /**
-     * @Route("delete-trick/{id}", name="trick_delete")
+     * @Route("delete-trick/{name}", name="trick_delete")
      */
     public function delete(Request $request, Trick $trick, Security $security): Response
     {

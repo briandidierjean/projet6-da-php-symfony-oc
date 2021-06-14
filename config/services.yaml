@@ -12,7 +12,7 @@ services:
             $appSecret: '%env(APP_SECRET)%'
             $ciphering: '%env(CIPHERING)%'
             $iv: '%env(IV)%'
-            $photos_directory: '%kernel.project_dir%/public/uploads/photos'
+            $uploads_directory: '%kernel.project_dir%/public/uploads'
 
 
     App\Service\FilenameGenerator:

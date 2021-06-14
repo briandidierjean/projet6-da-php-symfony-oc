@@ -4,7 +4,6 @@ namespace App\Controller;
 
 
 use App\Entity\TrickGroup;
-use App\Form\TrickGroupType;
 use App\Repository\TrickGroupRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,7 +30,7 @@ class TrickGroupController extends AbstractController
      * @Route("add-group-trick", name="trick_group_add")
      * @IsGranted("ROLE_ADMIN")
      */
-    public function add(Request $request, TrickGroupRepository $trickGroupRepository): Response
+    public function add(Request $request): Response
     {
         $entityManager = $this->getDoctrine()->getManager();
 
@@ -42,7 +41,7 @@ class TrickGroupController extends AbstractController
         $entityManager->persist($trickGroup);
         $entityManager->flush();
 
-        //TODO: Add redirect route
+        return $this->redirectToRoute('trick_group_index');
     }
 
     /**
@@ -57,7 +56,7 @@ class TrickGroupController extends AbstractController
 
             $entityManager->flush();
 
-        //TODO: Add redirect route
+        return $this->redirectToRoute('trick_group_index');
     }
 
     /**
@@ -70,6 +69,6 @@ class TrickGroupController extends AbstractController
         $entityManager->remove($trickGroup);
         $entityManager->flush();
 
-        // Todo: Add a redirect route.
+        return $this->redirectToRoute('trick_group_index');
     }
 }
