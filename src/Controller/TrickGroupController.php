@@ -1,11 +1,11 @@
 <?php
 
-
 namespace App\Controller;
 
 
 use App\Entity\TrickGroup;
 use App\Form\TrickGroupType;
+use App\Repository\TrickGroupRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,50 +15,53 @@ use Symfony\Component\Routing\Annotation\Route;
 class TrickGroupController extends AbstractController
 {
     /**
-     * @Route("add-group-trick", name="group_trick_add")
+     * @Route("groups", name="trick_group_index")
      * @IsGranted("ROLE_ADMIN")
      */
-    public function add(Request $request): Response
+    public function index(TrickGroupRepository $trickGroupRepository): Response
     {
+        $trickGroups = $trickGroupRepository->findAll();
+
+        return $this->render('trick-group/index.html.twig', [
+            'trickGroups' => $trickGroups
+        ]);
+    }
+
+    /**
+     * @Route("add-group-trick", name="trick_group_add")
+     * @IsGranted("ROLE_ADMIN")
+     */
+    public function add(Request $request, TrickGroupRepository $trickGroupRepository): Response
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+
         $trickGroup = new TrickGroup();
 
-        $form = $this->createForm(TrickGroupType::class, $trickGroup);
+        $trickGroup->setName($request->request->get('name'));
 
-        $form->handleRequest($request);
+        $entityManager->persist($trickGroup);
+        $entityManager->flush();
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($trickGroup);
-            $entityManager->flush();
-        }
-
-        return $this->render('trick-group/add.html.twig', [
-            'form' => $form->createView(),
-        ]);
+        //TODO: Add redirect route
     }
 
     /**
-     * @Route("update-group-trick/{id}", name="group_trick_update")
+     * @Route("update-group-trick/{id}", name="trick_group_update")
      * @IsGranted("ROLE_ADMIN")
      */
-    public function update(Request $request, TrickGroup $trickGroup): Response
+    public function update(TrickGroup $trickGroup, Request $request): Response
     {
-        $form = $this->createForm(TrickGroupType::class, $trickGroup);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->flush();
-        }
 
-        return $this->render('trick-group/update.html.twig', [
-            'form' => $form->createView(),
-        ]);
+            $trickGroup->setName($request->request->get('name'));
+
+            $entityManager->flush();
+
+        //TODO: Add redirect route
     }
 
     /**
-     * @Route("delete-group-trick/{id}", name="group_trick_delete")
+     * @Route("delete-group-trick/{id}", name="trick_group_delete")
      * @IsGranted("ROLE_ADMIN")
      */
     public function delete(TrickGroup $trickGroup): Response

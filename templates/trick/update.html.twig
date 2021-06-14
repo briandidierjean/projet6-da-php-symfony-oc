@@ -1,14 +1,82 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil | SnowTricks{% endblock %}
+{% block title %}Modification | {{ trick.name | upper }} | SnowTricks{% endblock %}
 
 {% block body %}
-    {{ form_start(form) }}
-    {{ form_row(form.name) }}
-    {{ form_row(form.description) }}
-    {{ form_row(form.photos) }}
-    {{ form_row(form.video) }}
+    <div class="trick-card-container">
+        <div class="card w-50 d-flex m-auto my-5">
+            <img class="card-img-top trick-card-img" src="{{ asset('images/default.png') }}" alt="Photo par défaut">
+            <div class="card-body d-flex flex-column">
+                <div class="row">
+                    <div class="col-lg-6">
+                        {% for photo in trick.photos %}
+                            <img class="card-img-top" src="" alt="">
+                        {% endfor %}
+                    </div>
+                    <div class="col-lg-6">
+                        {% for video in trick.videos %}
+                            <img class="card-img-top" src="" alt="">
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        {{form_start(form) }}
+                        <h1 class="text-center">{{ form_widget(form.name) }}</h1>
+                        <p class="trick-description">{{ form_widget(form.description) }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-around">
+                        <p>Date de création : <span class="badge bg-primary">{{ trick.creationDate | date("d/m/Y") }}</span></p>
+                        {% if trick.updateDate is same as(trick.creationDate) %}
+                            <p>Date de mise à jour : <span class="badge bg-primary">{{ trick.updateDate | date("d/m/Y") }}</span></p>
+                        {% endif %}
+                        <p>Posté par : <span class="badge bg-primary">{{ trick.user.username }}</span></p>
+                        {{ form_row(form.trickGroup) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center">
+                        <button class="btn btn-primary" type="submit">Modifier</button>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
 
-    <button type="submit">Mettre à jour</button>
-    {{ form_end(form) }}
+{% block script %}
+    <script>
+        offset = 0;
+
+        function loadMessages() {
+            $.post('{{ path('message_load_more') }}',
+                {offset: offset},
+                function(response) {
+                    if (response.last) {
+                        $('#load-more').hide();
+                    }
+                    response.output.forEach(message => {
+                        const deletePath = '{{ path('message_delete', {'id': 'messageId'}) }}'.replace('messageId', message.id);
+
+                        const messageCard = $('<div class="container my-2 d-flex justify-content-between align-items-center">' +
+                            '<div class="user-container d-flex flex-column align-items-center">' +
+                            '<img class="user-avatar mx-1" src="{{ asset('images/avatar-placeholder.png') }}" alt="">' +
+                            '<p class="mb-0">' + message.username + '</p>' +
+                            '</div>' +
+                            '<div class="card w-100 mx-1">' +
+                            '<div class="card-body">' + message.content+ '</div>' +
+                            '</div>' +
+                            '</div>');
+                        $('#messages-container').append(messageCard);
+                    });
+                    offset += 10;
+                }, 'json');
+        }
+
+        $(document).ready(loadMessages);
+        $('#load-more').on('click', loadMessages);
+    </script>
 {% endblock %}

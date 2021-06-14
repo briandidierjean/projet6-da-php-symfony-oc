@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -13,17 +14,38 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="users")
  * @UniqueEntity(
  *     fields="email",
- *     message="Cette adresse e-mail esst déjà utilisée."
+ *     message="Cette adresse e-mail est déjà utilisée."
+ * )
+ * @UniqueEntity(
+ *     fields="username",
+ *     message="Ce pseudo est déjà utilisé."
  * )
  */
 class User implements UserInterface
 {
+    public const PENDING_STATUS = 0;
+    public const VALIDATED_STATUS = 1;
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
     private $id;
+
+    /**
+     * @ORM\Column(type="string", unique=true)
+     * @Assert\NotBlank(
+     *     message="Veuillez choisir un pseudo"
+     * )
+     * @Assert\Length(
+     *     min = 3,
+     *     max = 50,
+     *     minMessage="Votre pseudo doit contenir au moins {{ limit }} caractères.",
+     *     maxMessage="Votre pseudo ne doit pas dépasser {{ limit }} caractères"
+     * )
+     */
+    private $username;
 
     /**
      * @ORM\Column(type="string", unique=true)
@@ -47,22 +69,6 @@ class User implements UserInterface
     private $plainPassword;
 
     /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank(
-     *     message="Veuillez saisir votre prénom."
-     * )
-     */
-    private $firstName;
-
-    /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank(
-     *     message="Veuillez saisir votre nom."
-     * )
-     */
-    private $lastName;
-
-    /**
      * @ORM\Column(type="string", nullable=true)
      */
     private $photo;
@@ -83,6 +89,16 @@ class User implements UserInterface
     private $roles = [];
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private $status = self::PENDING_STATUS;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $registrationToken;
+
+    /**
      * @ORM\Column(type="string", nullable=true)
      */
     private $resetPasswordToken;
@@ -99,7 +115,14 @@ class User implements UserInterface
 
     public function getUsername(): string
     {
-        return $this->email;
+        return $this->username;
+    }
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+
+        return $this;
     }
 
     public function getEmail(): string
@@ -138,30 +161,6 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getFirstName(): string
-    {
-        return $this->firstName;
-    }
-
-    public function setFirstName(string $firstName): self
-    {
-        $this->firstName = $firstName;
-
-        return $this;
-    }
-
-    public function getLastName(): string
-    {
-        return $this->lastName;
-    }
-
-    public function setLastName(string $lastName): self
-    {
-        $this->lastName = $lastName;
-
-        return $this;
-    }
-
     public function getPhoto(): string
     {
         return $this->photo;
@@ -174,24 +173,24 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getTricks(): ArrayCollection
+    public function getTricks(): Collection
     {
         return $this->tricks;
     }
 
-    public function setTricks(ArrayCollection $tricks): self
+    public function setTricks(Collection $tricks): self
     {
         $this->tricks = $tricks;
 
         return $this;
     }
 
-    public function getMessages(): ArrayCollection
+    public function getMessages(): Collection
     {
         return $this->messages;
     }
 
-    public function setMessages(ArrayCollection $messages): self
+    public function setMessages(Collection $messages): self
     {
         $this->messages = $messages;
 
@@ -214,6 +213,18 @@ class User implements UserInterface
         return $this;
     }
 
+    public function getStatus(): int
+    {
+        return $this->status;
+    }
+
+    public function setStatus(int $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
     public function getResetPasswordToken(): ?string
     {
         return $this->resetPasswordToken;
@@ -226,6 +237,18 @@ class User implements UserInterface
         return $this;
     }
 
+    public function getRegistrationToken(): ?string
+    {
+        return $this->registrationToken;
+    }
+
+    public function setRegistrationToken(string $registrationToken): self
+    {
+        $this->registrationToken = $registrationToken;
+
+        return $this;
+    }
+
     public function getSalt()
     {
     }
@@ -233,4 +256,5 @@ class User implements UserInterface
     public function eraseCredentials()
     {
     }
+
 }

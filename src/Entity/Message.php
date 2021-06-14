@@ -20,7 +20,7 @@ class Message
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Trick", inversedBy="messages")
-     * @ORM\JoinColumn(name="trick_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="trick_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $trick;
 
@@ -36,7 +36,7 @@ class Message
     private $creationDate;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="datetime")
      */
     private $updateDate;
 
@@ -48,6 +48,7 @@ class Message
     public function __construct()
     {
         $this->creationDate = new \DateTime();
+        $this->updateDate = $this->creationDate;
     }
 
     public function getId(): int

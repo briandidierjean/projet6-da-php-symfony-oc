@@ -7,12 +7,15 @@ use App\Form\ChangePasswordType;
 use App\Form\UserType;
 use App\Repository\UserRepository;
 use App\Security\LoginFormAuthenticator;
+use App\Service\FilenameGenerator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
@@ -21,6 +24,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class UserController extends AbstractController
 {
@@ -50,7 +54,8 @@ class UserController extends AbstractController
     /**
      * @Route("sign-up", name="user_sign_up")
      */
-    public function signUp(Request $request, UserPasswordEncoderInterface $passwordEncoder, GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $authenticator): Response
+    public function signUp(Request $request, UserPasswordEncoderInterface $passwordEncoder, $appSecret,
+                           $ciphering, $iv, MailerInterface $mailer): Response
     {
         $user = new User();
 
@@ -66,21 +71,67 @@ class UserController extends AbstractController
                 )
             );
 
+            $registrationToken = bin2hex(random_bytes(48)) . ':' . $user->getUsername() . ':' . time();
+
+            $registrationToken = openssl_encrypt($registrationToken, $ciphering, $appSecret, $options=0, $iv);
+
+            $user->setRegistrationToken($registrationToken);
+
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
 
-            return $guardHandler->authenticateUserAndHandleSuccess(
-                $user,
-                $request,
-                $authenticator,
-                'main'
+            $this->addFlash(
+                'notice',
+                'Un lien vous a été envoyé mail pour confirmer votre compte.'
             );
+
+            $email = (new Email())
+                ->from('contact@briandidierjean.dev')
+                ->to($user->getEmail())
+                ->subject('Subject:Validation de votre compte')
+                ->text(
+                    'Cliquez sur ce lien pour valider votre compte: 
+                    https://projet5-oc.briandidierjean.dev/validate-registration/'.base64_encode($user->getRegistrationToken())
+                );
+            $mailer->send($email);
         }
 
         return $this->render('user/sign-up.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    /**
+     * @Route("validate-registration/{registrationToken}", name="user_validate_registration")
+     */
+    public function validateRegistration(UserRepository $userRepository, $registrationToken, $ciphering, $appSecret, $iv): Response
+    {
+        $registrationToken = base64_decode($registrationToken);
+        $registrationToken = openssl_decrypt($registrationToken, $ciphering, $appSecret, $options = 0, $iv);
+
+        $registrationTokenList = explode(':', $registrationToken);
+        $tokenUsername = $registrationTokenList[1];
+        $tokenTime = $registrationTokenList[2];
+
+        $user = $userRepository->findOneBy(["username" => $tokenUsername]);
+
+        if ($user->getRegistrationToken() == $registrationToken && $tokenTime + 3600 * 48 > time()) {
+
+            $user->setResetPasswordToken(null);
+            $user->setStatus('validated');
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->flush();
+
+            $this->addFlash(
+                'success',
+                'Votre compte est validé.'
+            );
+
+            $this->redirectToRoute('user_sign_in');
+        }
+        throw $this->createNotFoundException('This token does not exist.');
     }
 
     /**
@@ -105,9 +156,50 @@ class UserController extends AbstractController
 
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->flush();
+
+            $this->addFlash(
+                'success',
+                'Votre mot de passe a bien été changé.'
+            );
         }
 
         return $this->render('user/change-password.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("change-avatar", name="user_change_avatar")
+     * @IsGranted("ROLE_USER")
+     */
+    public function changeAvatar(Request $request, FilenameGenerator $filenameGenerator)
+    {
+        $defaultData = [];
+
+        $user = $this->getUser();
+
+        $form = $this->createFormBuilder($defaultData)
+            ->add('avatar', FileType::class, [
+                'required' => true,
+                'label' => 'Votre photo (Moins de 2 Mo)',
+            ])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+
+            $data = $form->getData();
+
+            $newFilename = $filenameGenerator->generate($data['avatar']);
+
+                $user->setPhoto($newFilename);
+
+                $entityManager->flush($user);
+        }
+
+        return $this->render('user/change-avatar.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -118,10 +210,9 @@ class UserController extends AbstractController
     public function forgetPassword(Request $request, UserRepository $userRepository, MailerInterface $mailer, $appSecret, $ciphering, $iv): Response
     {
         $defaultData = [];
-        $errorMsg = '';
 
         $form = $this->createFormBuilder($defaultData)
-            ->add('email', EmailType::class)
+            ->add('username', TextType::class)
             ->getForm();
 
         $form->handleRequest($request);
@@ -129,10 +220,10 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 
-            $user = $userRepository->findOneBy(["email" => $data['email']]);
+            $user = $userRepository->findOneBy(["username" => $data['username']]);
 
-            if (isset($user)) {
-                $resetPasswordToken = bin2hex(random_bytes(48)) . ':' . $user->getEmail() . ':' . time();
+            if ($user) {
+                $resetPasswordToken = bin2hex(random_bytes(48)) . ':' . $user->getUsername() . ':' . time();
 
                 $resetPasswordToken = openssl_encrypt($resetPasswordToken, $ciphering, $appSecret, $options=0, $iv);
 
@@ -146,20 +237,20 @@ class UserController extends AbstractController
                     ->to($user->getEmail())
                     ->subject('Subject:Réinitialisation de mot de passe')
                     ->text(
-                        'Cliquez sur ce lien pour réinitialiser votre mot de passe' .
-                        ' : https://projet5-oc.briandidierjean.dev/reset-password/'.base64_encode($user->getResetPasswordToken())
+                        'Cliquez sur ce lien pour réinitialiser votre mot de passe:
+                        https://projet5-oc.briandidierjean.dev/reset-password/'.base64_encode($user->getResetPasswordToken())
                     );
                 $mailer->send($email);
-
-                //TODO: Add redirection
             }
 
-            $errorMsg = 'L\'adresse email n\'existe pas';
+            $this->addFlash(
+                'notice',
+                'Si le pseudo est correct, un mail sera envoyé à l\'adresse associée.'
+            );
         }
 
         return $this->render('user/forget-password.html.twig', [
             'form' => $form->createView(),
-            'errorMsg' => $errorMsg,
         ]);
     }
 
@@ -188,11 +279,10 @@ class UserController extends AbstractController
             $resetPasswordToken = openssl_decrypt($resetPasswordToken, $ciphering, $appSecret, $options=0, $iv);
 
             $resetPasswordTokenList = explode(':', $resetPasswordToken);
-            $tokenEmail = $resetPasswordTokenList[1];
+            $tokenUsername = $resetPasswordTokenList[1];
             $tokenTime = $resetPasswordTokenList[2];
 
-            $repository = $this->getDoctrine()->getRepository(User::class);
-            $user = $userRepository->findOneBy(["email" => $tokenEmail]);
+            $user = $userRepository->findOneBy(["username" => $tokenUsername]);
 
             if ($user->getResetPasswordToken() == $resetPasswordToken && $tokenTime + 3600 * 24 > time()) {
                 $user->setPassword(
@@ -205,6 +295,11 @@ class UserController extends AbstractController
 
                 $entityManager = $this->getDoctrine()->getManager();
                 $entityManager->flush();
+
+                $this->addFlash(
+                    'success',
+                    'Votre mot de passe a bien été changé.'
+                );
             }
         }
 
