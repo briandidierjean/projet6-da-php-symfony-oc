@@ -5,7 +5,6 @@ namespace App\DataFixtures;
 use App\Entity\Trick;
 use App\Entity\TrickGroup;
 use App\Entity\TrickPhoto;
-use App\Entity\TrickVideo;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -103,30 +102,6 @@ class AppFixtures extends Fixture
         $manager->persist($photo);
 
         $ollie->addPhoto($photo);
-
-        $video = new TrickVideo();
-        $video->setName('ollie1.mp4');
-        $video->setTrick($ollie);
-
-        $manager->persist($video);
-
-        $ollie->addVideo($video);
-
-        $video = new TrickVideo();
-        $video->setName('ollie2.mp4');
-        $video->setTrick($ollie);
-
-        $manager->persist($video);
-
-        $ollie->addVideo($video);
-
-        $video = new TrickVideo();
-        $video->setName('ollie3.mp4');
-        $video->setTrick($ollie);
-
-        $manager->persist($video);
-
-        $ollie->addVideo($video);
 
         $manager->persist($ollie);
 
