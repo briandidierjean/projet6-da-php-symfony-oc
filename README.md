@@ -4,9 +4,13 @@ Instructions pour installer le projet :
 
 Récupérer le code.
 
-Ajouter un serveur de base de données MySQL dans le fichier .env
+Copier le contenu du fichier .env dans un nouveau fichier nommé .env.local
 
-Ajouter un serveur smtp dans le fichier .env
+Mettre la valeur APP_ENV=prod
+
+Ajouter un serveur de base de données MySQL dans le fichier .env.local
+
+Ajouter un serveur smtp dans le fichier .env.local
 
 Entrer les commandes suivantes :
 
