@@ -1,5 +1,7 @@
 # SnowTricks
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1ae088e4e1f341aa9ea3b95bcde53e8f)](https://app.codacy.com/gh/briandidierjean/projet6-da-php-symfony-oc?utm_source=github.com&utm_medium=referral&utm_content=briandidierjean/projet6-da-php-symfony-oc&utm_campaign=Badge_Grade_Settings)
+
 Instructions pour installer le projet :
 
 Récupérer le code.
