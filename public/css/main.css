@@ -61,10 +61,15 @@
     left: 10px;
 }
 
+.photos-container,
+.videos-container {
+    flex-wrap: wrap;
+}
+
 .trick-photo,
 .trick-video {
-    width: 220px;
-    height: 140px;
+    width: 154px;
+    height: 120px;
 }
 
 .trick-video-content {

@@ -88,7 +88,7 @@ class UserController extends AbstractController
                 ->subject('Subject:Validation de votre compte')
                 ->text(
                     'Cliquez sur ce lien pour valider votre compte: 
-                    https://projet5-oc.briandidierjean.dev/validate-registration/'.base64_encode($user->getRegistrationToken())
+                    https://projet6-oc-php.briandidierjean.dev/validate-registration/'.base64_encode($user->getRegistrationToken())
                 );
             $mailer->send($email);
 
@@ -243,7 +243,7 @@ class UserController extends AbstractController
                     ->subject('Subject:Réinitialisation de mot de passe')
                     ->text(
                         'Cliquez sur ce lien pour réinitialiser votre mot de passe:
-                        https://projet5-oc.briandidierjean.dev/reset-password/'.base64_encode($user->getResetPasswordToken())
+                        https://projet6-oc-php.briandidierjean.dev/reset-password/'.base64_encode($user->getResetPasswordToken())
                     );
                 $mailer->send($email);
             }
