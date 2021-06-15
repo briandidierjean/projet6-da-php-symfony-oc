@@ -18,6 +18,9 @@ class FilenameGenerator
         $this->slugger = $slugger;
     }
 
+    /**
+     * Check if the file extension is authorized.
+     */
     public function checkPhotoExt($file)
     {
         if ($file->guessExtension() !== '.jpeg' &&
@@ -29,6 +32,9 @@ class FilenameGenerator
         return true;
     }
 
+    /**
+     * Check if the file extension is authorized.
+     */
     public function checkVideoExt($file)
     {
         if ($file->guessExtension() !== '.mp4' &&
@@ -40,6 +46,9 @@ class FilenameGenerator
         return true;
     }
 
+    /**
+     * Generate a new filename after randomizing it.
+     */
     public function generate($file)
     {
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
