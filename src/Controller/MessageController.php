@@ -24,8 +24,9 @@ class MessageController extends AbstractController
         $last = true;
 
         $offset = json_decode($request->get('offset'));
+        $trickId = json_decode($request->get('trickId'));
         if (isset($offset)) {
-            $messages = $messageRepository->findBy([], ['creationDate' => 'DESC'], 10, $offset);
+            $messages = $messageRepository->findBy(['trick' => $trickId], ['creationDate' => 'DESC'], 10, $offset);
 
             if ($messages) {
                 $last = false;

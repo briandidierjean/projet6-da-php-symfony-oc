@@ -66,6 +66,10 @@
     flex-wrap: wrap;
 }
 
+.trick-thumbnail-card {
+    max-width: 500px;
+}
+
 .trick-photo,
 .trick-video {
     width: 154px;
@@ -93,7 +97,7 @@
 
     .trick-photo,
     .trick-video {
-        width: 50%;
+        width: 100%;
         height: auto;
         margin: 8px 0;
     }

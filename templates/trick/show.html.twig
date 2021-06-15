@@ -113,11 +113,13 @@
 
     function loadMessages() {
         $.post('{{ path('message_load_more') }}',
-            {offset: offset},
+            {offset: offset,
+            trickId: {{ trick.id }}},
             function(response) {
                 if (response.last) {
                     $('#load-more').hide();
                 }
+                console.log(response);
                 response.output.forEach(message => {
                     const deletePath = '{{ path('message_delete', {'id': 'messageId'}) }}'.replace('messageId', message.id);
 
