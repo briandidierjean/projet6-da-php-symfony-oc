@@ -242,7 +242,7 @@ class User implements UserInterface
         return $this->registrationToken;
     }
 
-    public function setRegistrationToken(string $registrationToken): self
+    public function setRegistrationToken(?string $registrationToken): self
     {
         $this->registrationToken = $registrationToken;
 

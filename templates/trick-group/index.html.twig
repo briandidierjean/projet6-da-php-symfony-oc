@@ -17,7 +17,6 @@
                         <form class="trick-group-form my-1 d-flex" method="post" action="{{ path('trick_group_update', {'id': trickGroup.id}) }}">
                             <input class="form-control mx-1" id="rename-trick-group" type="text" name="name" value="{{ trickGroup.name }}">
                             <button class="btn btn-primary mx-1" type="submit"><i class="fas fa-edit"></i></button>
-                            <a class="btn btn-primary mx-1" href="{{ path('trick_group_delete', {'id': trickGroup.id}) }}"><i class="fas fa-trash-alt"></i></a>
                         </form>
                     {% endfor %}
             </div>

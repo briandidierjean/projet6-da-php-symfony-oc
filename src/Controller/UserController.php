@@ -106,9 +106,9 @@ class UserController extends AbstractController
     public function validateRegistration(UserRepository $userRepository, $registrationToken, $ciphering, $appSecret, $iv): Response
     {
         $registrationToken = base64_decode($registrationToken);
-        $registrationToken = openssl_decrypt($registrationToken, $ciphering, $appSecret, $options = 0, $iv);
+        $registrationTokenDecrypt = openssl_decrypt($registrationToken, $ciphering, $appSecret, $options = 0, $iv);
 
-        $registrationTokenList = explode(':', $registrationToken);
+        $registrationTokenList = explode(':', $registrationTokenDecrypt);
         $tokenUsername = $registrationTokenList[1];
         $tokenTime = $registrationTokenList[2];
 
@@ -116,8 +116,8 @@ class UserController extends AbstractController
 
         if ($user->getRegistrationToken() == $registrationToken && $tokenTime + 3600 * 48 > time()) {
 
-            $user->setResetPasswordToken(null);
-            $user->setStatus('validated');
+            $user->setRegistrationToken(null);
+            $user->setStatus(1);
 
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->flush();
@@ -127,7 +127,7 @@ class UserController extends AbstractController
                 'Votre compte est validé.'
             );
 
-            $this->redirectToRoute('user_sign_in');
+            return $this->redirectToRoute('user_sign_in');
         }
         throw $this->createNotFoundException('This token does not exist.');
     }
@@ -281,9 +281,9 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $resetPasswordToken = base64_decode($resetPasswordToken);
-            $resetPasswordToken = openssl_decrypt($resetPasswordToken, $ciphering, $appSecret, $options=0, $iv);
+            $resetPasswordTokenDecrypt = openssl_decrypt($resetPasswordToken, $ciphering, $appSecret, $options=0, $iv);
 
-            $resetPasswordTokenList = explode(':', $resetPasswordToken);
+            $resetPasswordTokenList = explode(':', $resetPasswordTokenDecrypt);
             $tokenUsername = $resetPasswordTokenList[1];
             $tokenTime = $resetPasswordTokenList[2];
 

@@ -58,17 +58,4 @@ class TrickGroupController extends AbstractController
 
         return $this->redirectToRoute('trick_group_index');
     }
-
-    /**
-     * @Route("delete-group-trick/{id}", name="trick_group_delete")
-     * @IsGranted("ROLE_ADMIN")
-     */
-    public function delete(TrickGroup $trickGroup): Response
-    {
-        $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->remove($trickGroup);
-        $entityManager->flush();
-
-        return $this->redirectToRoute('trick_group_index');
-    }
 }

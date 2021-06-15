@@ -97,7 +97,7 @@ class Trick
         return $this->id;
     }
 
-    public function getTrickGroup(): TrickGroup
+    public function getTrickGroup()
     {
         return $this->trickGroup;
     }
