@@ -37,7 +37,7 @@ class MessageController extends AbstractController
                 if ($lastMessage === $message) {
                     $last = true;
                 }
-                $output[] =  ['content' => $message->getContent(), 'username' => $message->getUser()->getUsername(), 'id' => $message->getId(), 'creationDate' => $message->getCreationDate()->format("d/m/Y")];
+                $output[] =  ['content' => $message->getContent(), 'username' => $message->getUser()->getUsername(), 'userAvatar' => $message->getUser()->getPhoto(), 'id' => $message->getId(), 'creationDate' => $message->getCreationDate()->format("d/m/Y")];
             }
 
             dump($output);

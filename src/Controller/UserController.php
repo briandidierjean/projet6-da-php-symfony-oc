@@ -195,6 +195,10 @@ class UserController extends AbstractController
                     'danger',
                     'Le format est de photo est incorrect.'
                 );
+
+                return $this->render('user/change-avatar.html.twig', [
+                    'form' => $form->createView(),
+                ]);
             }
 
             $newFilename = $filenameGenerator->generate($data['avatar']);
@@ -206,6 +210,7 @@ class UserController extends AbstractController
 
         return $this->render('user/change-avatar.html.twig', [
             'form' => $form->createView(),
+            'user' => $user,
         ]);
     }
 

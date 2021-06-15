@@ -23,13 +23,13 @@ class FilenameGenerator
      */
     public function checkPhotoExt($file)
     {
-        if ($file->guessExtension() !== '.jpeg' &&
-            $file->guessExtension() !== '.jpg' &&
-            $file->guessExtension() !== '.png') {
-            return false;
+        if ($file->guessExtension() === 'jpeg' ||
+            $file->guessExtension() === 'jpg' ||
+            $file->guessExtension() === 'png') {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     /**
@@ -37,13 +37,13 @@ class FilenameGenerator
      */
     public function checkVideoExt($file)
     {
-        if ($file->guessExtension() !== '.mp4' &&
-            $file->guessExtension() !== '.ogv' &&
-            $file->guessExtension() !== '.webm') {
-            return false;
+        if ($file->guessExtension() === 'mp4' ||
+            $file->guessExtension() === 'ogv' ||
+            $file->guessExtension() === 'webm') {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     /**

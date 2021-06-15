@@ -121,9 +121,14 @@
                 response.output.forEach(message => {
                     const deletePath = '{{ path('message_delete', {'id': 'messageId'}) }}'.replace('messageId', message.id);
 
+                    let userAvatar = '<img class="user-avatar mx-1" src="{{ asset('uploads/') }}'+message.userAvatar+'" alt="">';
+                    if (message.userAvatar === null) {
+                        userAvatar = '<img class="user-avatar mx-1" src="{{ asset('images/avatar-placeholder.png') }}" alt="">';
+                    }
+
                     const messageCard = $('<div class="container my-2 d-flex justify-content-between align-items-center">' +
                         '<div class="user-container d-flex flex-column align-items-center">' +
-                            '<img class="user-avatar mx-1" src="{{ asset('images/avatar-placeholder.png') }}" alt="">' +
+                            userAvatar +
                             '<p class="mb-0">' + message.username + '</p>' +
                         '</div>' +
                         '<div class="card w-100 mx-1">' +

@@ -54,7 +54,7 @@
                         const showPath = '{{ path('trick_show', {'name': 'trickName'}) }}'.replace('trickName', trick.name);
 
                         let trickThumbnail = '<img class="trick-thumbnail card-img-top" src="{{ asset('uploads/') }}'+trick.mainPhoto+'" alt="">';
-                        if (trick.mainPhoto === '') {
+                        if (trick.mainPhoto === null) {
                             trickThumbnail = '<img class="card-img-top trick-thumbnail" src="{{ asset('images/default.png') }}">';
                         }
 

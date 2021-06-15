@@ -44,15 +44,13 @@
                     {% endif %}
                     {% if is_granted('ROLE_USER') %}
                         <li class="nav-item">
+                            <a class="nav-link" href="{{ path('user_change_avatar') }}">Changer l'avatar</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="{{ path('user_change_password') }}">Mot de passe</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ path('user_sign_out') }}">Déconnexion</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('user_change_avatar') }}">
-                                <img class="user-avatar" src="{{ asset('images/avatar-placeholder.png') }}" alt="">
-                            </a>
                         </li>
                     {% endif %}
                 </ul>
