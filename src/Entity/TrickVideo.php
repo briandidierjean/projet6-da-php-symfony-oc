@@ -35,7 +35,7 @@ class TrickVideo
         return $this->id;
     }
 
-    public function getName(): string
+    public function getName()
     {
         return $this->name;
     }

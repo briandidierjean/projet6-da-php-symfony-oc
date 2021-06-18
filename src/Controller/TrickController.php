@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class TrickController extends AbstractController
 {
@@ -60,14 +61,14 @@ class TrickController extends AbstractController
                         $photosNames[] = ['name' => $photo->getName()];
                     }
                 }
-                $output[] =  ['name' => $trick->getName(), 'mainPhoto' => $trick->getMainPhoto(), 'photos' => $photosNames, 'id' => $trick->getId()];
+                $output[] = ['name' => $trick->getName(), 'slug' => $trick->getSlug(), 'mainPhoto' => $trick->getMainPhoto(), 'photos' => $photosNames, 'id' => $trick->getId()];
             }
             return new Response(json_encode(['output' => $output, 'last' => $last]));
         }
     }
 
     /**
-     * @Route("show-trick/{name}", name="trick_show")
+     * @Route("show-trick/{slug}", name="trick_show")
      */
     public function show(Trick $trick): Response
     {
@@ -90,6 +91,9 @@ class TrickController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
+
+            $slugger = new AsciiSlugger();
+            $trick->setSlug($slugger->slug($form->get('name')->getData()));
 
             $user = $this->getUser();
 
@@ -118,31 +122,27 @@ class TrickController extends AbstractController
 
                     $newFilename = $filenameGenerator->generate($photoFile);
 
-                        $trickPhoto = new TrickPhoto();
-                        $trickPhoto->setName($newFilename);
-                        $trickPhoto->setTrick($trick);
+                    $trickPhoto = new TrickPhoto();
+                    $trickPhoto->setName($newFilename);
+                    $trickPhoto->setTrick($trick);
 
-                        $entityManager->persist($trickPhoto);
+                    $entityManager->persist($trickPhoto);
                 }
             }
 
-            $videoFiles = $form->get('videos')->getData();
-            if ($videoFiles) {
-                foreach ($videoFiles as $videoFile) {
+            $videos = $form->get('videos')->getData();
 
-                    if (!$filenameGenerator->checkVideoExt($videoFile)) {
-                        return $this->render('trick/add.html.twig', [
-                            'form' => $form->createView(),
-                        ]);
+            if ($videos) {
+                foreach ($videos as $video) {
+
+                    if ($video->getName() !== null) {
+
+                        $trickVideo = new TrickVideo();
+                        $trickVideo->setName($video->getName());
+                        $trickVideo->setTrick($trick);
+
+                        $entityManager->persist($trickVideo);
                     }
-
-                    $newFilename = $filenameGenerator->generate($videoFile);
-
-                    $trickVideo = new TrickVideo();
-                    $trickVideo->setName($newFilename);
-                    $trickVideo->setTrick($trick);
-
-                    $entityManager->persist($trickVideo);
                 }
             }
 
@@ -158,7 +158,7 @@ class TrickController extends AbstractController
     }
 
     /**
-     * @Route("update-trick/{name}", name="trick_update")
+     * @Route("update-trick/{slug}", name="trick_update")
      */
     public function update(Request $request, Trick $trick, Security $security, FilenameGenerator $filenameGenerator): Response
     {
@@ -206,23 +206,20 @@ class TrickController extends AbstractController
                 }
             }
 
-            $videoFiles = $form->get('videos')->getData();
-            if ($videoFiles) {
-                foreach ($videoFiles as $videoFile) {
+            $videos = $form->get('videos')->getData();
 
-                    if (!$filenameGenerator->checkVideoExt($videoFile)) {
-                        return $this->render('trick/add.html.twig', [
-                            'form' => $form->createView(),
-                        ]);
+            dump($form);
+            if ($videos) {
+                foreach ($videos as $video) {
+
+                    if ($video->getName() !== null) {
+
+                        $trickVideo = new TrickVideo();
+                        $trickVideo->setName($video->getName());
+                        $trickVideo->setTrick($trick);
+
+                        $entityManager->persist($trickVideo);
                     }
-
-                    $newFilename = $filenameGenerator->generate($videoFile);
-
-                    $trickVideo = new TrickVideo();
-                    $trickVideo->setName($newFilename);
-                    $trickVideo->setTrick($trick);
-
-                    $entityManager->persist($trickVideo);
                 }
             }
 
@@ -240,7 +237,7 @@ class TrickController extends AbstractController
     }
 
     /**
-     * @Route("delete-trick/{name}", name="trick_delete")
+     * @Route("delete-trick/{slug}", name="trick_delete")
      */
     public function delete(Request $request, Trick $trick, Security $security): Response
     {

@@ -27,6 +27,11 @@ class Trick
     private $id;
 
     /**
+     * @ORM\Column(type="string", unique=true)
+     */
+    private $slug;
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\TrickGroup", inversedBy="tricks")
      * @ORM\JoinColumn(name="trick_group_id", referencedColumnName="id")
      */
@@ -65,7 +70,7 @@ class Trick
     private $updateDate;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
     private $mainPhoto;
 
@@ -95,6 +100,18 @@ class Trick
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function getSlug()
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
+
+        return $this;
     }
 
     public function getTrickGroup()
@@ -169,12 +186,12 @@ class Trick
         return $this;
     }
 
-    public function getMainPhoto(): string
+    public function getMainPhoto()
     {
         return $this->mainPhoto;
     }
 
-    public function setMainPhoto(string $mainPhoto): self
+    public function setMainPhoto($mainPhoto): self
     {
         $this->mainPhoto = $mainPhoto;
 

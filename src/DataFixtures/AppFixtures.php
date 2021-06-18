@@ -9,6 +9,7 @@ use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class AppFixtures extends Fixture
 {
@@ -72,6 +73,8 @@ class AppFixtures extends Fixture
 
         $ollie = new Trick();
         $ollie->setName('Ollie');
+        $slugger = new AsciiSlugger();
+        $ollie->setSlug($slugger->slug($ollie->getName()));
         $ollie->setDescription('Un trick dans lequel le snowboarder s\'élance du tail de la planche et dans les airs.');
         $ollie->setTrickGroup($straightAirs);
         $ollie->setUser($user);
@@ -107,6 +110,8 @@ class AppFixtures extends Fixture
 
         $shifty = new Trick();
         $shifty->setName('Shifty');
+        $slugger = new AsciiSlugger();
+        $shifty->setSlug($slugger->slug($shifty->getName()));
         $shifty->setDescription('Un trick aérien dans lequel un snowboarder fait contre-rotation le haut de son corps afin de déplacer sa planche d\'environ 90 ° par rapport à sa position normale sous lui, puis ramène la planche à sa position d\'origine avant d\'atterrir. Ce tour peut être réalisé en frontside ou backside, mais aussi en variation avec d\'autres tricks and spins.');
         $shifty->setTrickGroup($straightAirs);
         $shifty->setUser($user);
@@ -118,6 +123,8 @@ class AppFixtures extends Fixture
 
         $oneTwo = new Trick();
         $oneTwo->setName('One-Two');
+        $slugger = new AsciiSlugger();
+        $oneTwo->setSlug($slugger->slug($oneTwo->getName()));
         $oneTwo->setDescription('Un trick dans lequel la main avant du cavalier attrape le bord du talon derrière son pied arrière.');
         $oneTwo->setTrickGroup($grabs);
         $oneTwo->setUser($user);
@@ -129,6 +136,8 @@ class AppFixtures extends Fixture
 
         $crail = new Trick();
         $crail->setName('Crail');
+        $slugger = new AsciiSlugger();
+        $crail->setSlug($slugger->slug($crail->getName()));
         $crail->setDescription('La main arrière saisit le bord des orteils devant le pied avant tandis que la jambe arrière est désossée.[1] Alternativement, certains considèrent toute prise arrière devant le pied avant sur le bord des orteils comme une prise crail, classant une prise au nez comme un « crail de nez » ou un « vrai crail ».');
         $crail->setTrickGroup($grabs);
         $crail->setUser($user);
@@ -140,6 +149,8 @@ class AppFixtures extends Fixture
 
         $nosePick = new Trick();
         $nosePick->setName('Nose-pick');
+        $slugger = new AsciiSlugger();
+        $nosePick->setSlug($slugger->slug($nosePick->getName()));
         $nosePick->setDescription('Caler sur un objet avec le nez de la planche à neige, tout en saisissant la face avant, puis sauter en arrière de l\'objet dans le saut que vous avez effectué.');
         $nosePick->setTrickGroup($stalls);
         $nosePick->setUser($user);
@@ -151,6 +162,8 @@ class AppFixtures extends Fixture
 
         $bluntStall = new Trick();
         $bluntStall->setName('Blunt-stall');
+        $slugger = new AsciiSlugger();
+        $bluntStall->setSlug($slugger->slug($bluntStall->getName()));
         $bluntStall->setDescription('Imitant le skateboard, et similaire à un décrochage de planche, ce tour est effectué en calant sur un objet avec la queue de la planche (décrochage émoussé) ou le nez de la planche (décrochage du nez). Distingué d\'un décrochage avant ou d\'un décrochage arrière car pendant le décrochage, la majeure partie du snowboard sera positionnée au-dessus de l\'obstacle et du point de contact.');
         $bluntStall->setTrickGroup($stalls);
         $bluntStall->setUser($user);
@@ -162,6 +175,8 @@ class AppFixtures extends Fixture
 
         $boardslide = new Trick();
         $boardslide->setName('Boardslide');
+        $slugger = new AsciiSlugger();
+        $boardslide->setSlug($slugger->slug($boardslide->getName()));
         $boardslide->setDescription(' Une glissade effectuée où le pied de tête du cycliste passe au-dessus du rail à l\'approche, avec son snowboard se déplaçant perpendiculairement le long du rail ou d\'un autre obstacle. Lors de l\'exécution d\'un boardslide frontside, le snowboarder fait face à la montée. Lors de l\'exécution d\'un backside boardslide, un snowboarder fait face à la descente. C\'est souvent déroutant pour les nouveaux riders qui apprennent le trick car avec un boardslide frontside vous reculez et avec un boardslide backside vous avancez.');
         $boardslide->setTrickGroup($slides);
         $boardslide->setUser($user);
@@ -173,6 +188,8 @@ class AppFixtures extends Fixture
 
         $noseblunt = new Trick();
         $noseblunt->setName('Noseblunt');
+        $slugger = new AsciiSlugger();
+        $noseblunt->setSlug($slugger->slug($noseblunt->getName()));
         $noseblunt->setDescription('Une glissade effectuée où le pied arrière du cycliste passe au-dessus du rail à l\'approche, avec sa planche à neige se déplaçant perpendiculairement et le pied avant directement au-dessus du rail ou d\'un autre obstacle (comme un noseslide). Lors de l\'exécution d\'un frontside noseblunt, le snowboarder fait face à la descente. Lors de l\'exécution d\'un noseblunt arrière, le snowboarder fait face à la montée.');
         $noseblunt->setTrickGroup($slides);
         $noseblunt->setUser($user);
@@ -184,6 +201,8 @@ class AppFixtures extends Fixture
 
         $wildcat = new Trick();
         $wildcat->setName('Wildcat');
+        $slugger = new AsciiSlugger();
+        $wildcat->setSlug($slugger->slug($wildcat->getName()));
         $wildcat->setDescription('Un backflip effectué sur un saut droit, avec un axe de rotation dans lequel le snowboarder effectue un flip vers l\'arrière, comme une roue de charrette. Un double chat sauvage est appelé un superchat.');
         $wildcat->setTrickGroup($flipsAndInvertedRotations);
         $wildcat->setUser($user);
@@ -195,6 +214,8 @@ class AppFixtures extends Fixture
 
         $chicane = new Trick();
         $chicane->setName('Chicane');
+        $slugger = new AsciiSlugger();
+        $chicane->setSlug($slugger->slug($chicane->getName()));
         $chicane->setDescription('Une chicane est un tour rarement fait qui consiste à faire un frontside 180 avec un front flip sur l\'axe X. À l\'opposé du rouleau 90, la chicane est frontale 90, repliée avant, 90 degrés de plus pour atterrir, ou vice versa.');
         $chicane->setTrickGroup($flipsAndInvertedRotations);
         $chicane->setUser($user);

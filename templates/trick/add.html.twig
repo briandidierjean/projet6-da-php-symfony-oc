@@ -22,7 +22,11 @@
                         {{ form_row(form.photos) }}
                     </div>
                     <div class="col-6 videos-container">
-                        {{ form_row(form.videos) }}
+                        <div id="videos" class="videos" data-prototype="{{ form_widget(form.videos.vars.prototype)|e('html_attr') }}">
+                            {{ form_widget(form.videos) }}
+                        </div>
+                        <input id="video-counter" type="hidden" value="0">
+                        <button id="add-video" type="button">Ajouter une vidéo</button>
                     </div>
                 </div>
                 <div class="row">
@@ -54,6 +58,14 @@
 
         $('.upload-mainPhoto').change(function() {
             readURL(this);
+        });
+
+        $('#add-video').on('click', function (e) {
+            const index = +$('#video-counter').val();
+            const tmpl = $('.videos').data('prototype').replace(/__name__/g, index);
+            console.log(tmpl);
+            $('#video-counter').val(index + 1);
+            $('#videos').append(tmpl);
         });
     </script>
 {% endblock %}

@@ -5,7 +5,7 @@
 {% block body %}
     <div class="trick-card-container">
         <div class="trick-card card d-flex m-auto my-5">
-            {% if trick.mainPhoto is same as ('') %}
+            {% if trick.mainPhoto is same as (null) %}
                 <img class="card-img-top trick-card-img" src="{{ asset('images/default.png') }}">
             {% else %}
                 <img class="card-img-top trick-card-img" src="{{ asset('uploads/') }}{{ trick.mainPhoto }}">
@@ -15,7 +15,7 @@
                     <div class="col-lg-6">
                         <div class="crud-btn-container">
                             {% if is_granted('UPDATE', trick) or is_granted('ROLE_ADMIN') %}
-                                <a href="{{ path('trick_update', {'name': trick.name}) }}"><i class="fas fa-edit fa-2x"></i></a>
+                                <a href="{{ path('trick_update', {'slug': trick.slug}) }}"><i class="fas fa-edit fa-2x"></i></a>
                             {% endif %}
                             {% if is_granted('DELETE', trick) or is_granted('ROLE_ADMIN') %}
                                 <a href="" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="fas fa-trash-alt fa-2x"></i></a>
@@ -45,7 +45,7 @@
                             {% else %}
                                 {% for video in trick.videos %}
                                     <div class="trick-video card-img-top mx-1">
-                                        <video class="trick-video-content w-100" controls src="{{ asset('uploads/') }}{{ video.name }}"></video>
+                                        <iframe width="154" height="120" src="{{ video.name }}" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                                     </div>
                                 {% endfor %}
                             {% endif %}
@@ -100,7 +100,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <a href="{{ path('trick_delete', {'name': trick.name}) }}" type="button" class="btn btn-primary">Oui</a>
+                    <a href="{{ path('trick_delete', {'slug': trick.slug}) }}" type="button" class="btn btn-primary">Oui</a>
                 </div>
             </div>
         </div>

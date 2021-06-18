@@ -49,16 +49,14 @@
                         $('#load-more').hide();
                     }
                     response.output.forEach(trick => {
-                        const deletePath = '{{ path('trick_delete', {'name': 'trickName'}) }}'.replace('trickName', trick.name);
-                        const updatePath = '{{ path('trick_update', {'name': 'trickName'}) }}'.replace('trickName', trick.name);
-                        const showPath = '{{ path('trick_show', {'name': 'trickName'}) }}'.replace('trickName', trick.name);
+                        const deletePath = '{{ path('trick_delete', {'slug': 'trickSlug'}) }}'.replace('trickSlug', trick.slug);
+                        const updatePath = '{{ path('trick_update', {'slug': 'trickSlug'}) }}'.replace('trickSlug', trick.slug);
+                        const showPath = '{{ path('trick_show', {'slug': 'trickSlug'}) }}'.replace('trickSlug', trick.slug);
 
                         let trickThumbnail = '<img class="trick-thumbnail card-img-top" src="{{ asset('uploads/') }}'+trick.mainPhoto+'" alt="">';
                         if (trick.mainPhoto === null) {
                             trickThumbnail = '<img class="card-img-top trick-thumbnail" src="{{ asset('images/default.png') }}">';
                         }
-
-
 
                         const trickCard = $('<div class="col-lg-2 mx-4 my-3 d-flex justify-content-center">' +
                             '<div class="trick-thumbnail-card card">' +

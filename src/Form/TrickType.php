@@ -8,9 +8,11 @@ use App\Entity\Trick;
 use App\Entity\TrickGroup;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use App\Form\VideoType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -38,11 +40,13 @@ class TrickType extends AbstractType
                 'required' => false,
                 'multiple' => true,
             ])
-            ->add('videos', FileType::class, [
-                'label' => 'Videos du trick :',
+            ->add('videos', CollectionType::class, [
+                'entry_type' => VideoType::class,
+                'entry_options' => ['label' => false],
+                'allow_add' => true,
+                'allow_delete' => true,
+                'label'=> false,
                 'mapped' => false,
-                'required' => false,
-                'multiple' => true,
             ])
             ->add('trickGroup',EntityType::class, [
                 'class' => TrickGroup::class,
